@@ -1,0 +1,15 @@
+.pagenum{
+    display: inline-flex;
+    /* background: #00877C; */
+    color: #000000;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 21px;
+    padding: 5px 12px;
+}
+
+.pagenumcolour{
+    background: #00b2d5;
+    color: white;
+}

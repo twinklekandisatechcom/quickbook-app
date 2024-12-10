@@ -1,0 +1,155 @@
+<template>
+    <template if:true={showLoading}>
+        <lightning-spinner class="slds-is-fixed" alternative-text="Loading..." variant="brand"></lightning-spinner>
+    </template>
+    <template if:false={showLoading}>
+        <article class="slds-card permissionSet">
+            <div class="slds-card__header slds-grid">
+                <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                    <lightning-icon icon-name="utility:key" alternative-text="Event" variant="success">
+                    </lightning-icon>
+                    <div class="slds-media__body">
+                        <h2 class="slds-card__header-title slds-m-left_small">
+                            <a class="slds-card__header-link slds-truncate" title="Permission Set Assignment">
+                                <span>Permission Set Assignment</span>
+                            </a>
+                        </h2>
+                    </div>
+                </header>
+            </div>
+            <div class="slds-card__body" >
+                <section class="slds-card"  >
+                    <lightning-tabset active-tab-value="one">
+                        <lightning-tab label="Quickbook Integration Admin" value="one">
+                            <p>User with this permission set can perform all functions, including connecting to and disconnecting from Quickbook entities, and setting the configuration of Quickbook Integration.</p>
+                                <template if:true={adminUser.length}>
+                                    <div style="margin-top: 10px; margin-bottom: 20px;">
+                                        <lightning-layout multiple-rows="true">
+                                            <lightning-layout-item padding="horizontal-small" alignment-bump="left">
+                                                <lightning-button variant="brand" label="Assign this Permission Set to a Users" title="Assign this Permission Set to a User" onclick={handlePermission} class="slds-m-left_x-small" value="Quickbook_Integration_Admin"></lightning-button>
+                                            </lightning-layout-item>
+                                        </lightning-layout>
+                                    </div>
+                                    <div>
+                                        <lightning-datatable data={adminUser}
+                                                             columns={columns} 
+                                                             key-field="id" 
+                                                             sorted-by={sortBy}
+                                                             sorted-direction={sortDirection} 
+                                                             onsort={sortAdmin} 
+                                                             hide-checkbox-column="true"
+                                                             class="custom-datatable"></lightning-datatable>
+                                    </div>
+                                </template>
+                                <template if:false={adminUser.length}>
+                                    <br/><br/><br/>
+                                    <c-no-data-cmp info="No data found"></c-no-data-cmp>
+                                    <div style="margin-top: 50px; margin-bottom: 20px;">
+                                        <lightning-layout multiple-rows="true" class="slds-align_absolute-center">
+                                            <lightning-layout-item padding="horizontal-small" alignment-bump="top">
+                                                <lightning-button variant="brand" 
+                                                                  label="Assign this Permission Set to a Users" 
+                                                                  title="Assign this Permission Set to a User" 
+                                                                  onclick={handlePermission} 
+                                                                  class="slds-m-left_x-small" 
+                                                                  value="Quickbook_Integration_Admin"></lightning-button>
+                                            </lightning-layout-item>
+                                        </lightning-layout>
+                                    </div>
+                                </template>     
+                        </lightning-tab>
+                        <lightning-tab label="Quickbook Integration Operational" value="two">
+                            <p>User with this permission can see all data (just like Read Only) and also allows the creation of Invoices and Quickbook Contacts, and the editing of Quickbook Contacts, and can also run Batch Invoices, Match Quickbook Contacts to Salesforce Accounts, Import Inventory Items as Salesforce Products. Users can also change which Salesforce Account a Quickbook Contact is associated with, or change whether that Quickbook Contact syncs Invoices or not.</p>
+                            <template if:true={operationalUser.length}>
+                                <div style="margin-top: 10px; margin-bottom: 20px;">
+                                    <lightning-layout multiple-rows="true">
+                                        <lightning-layout-item padding="horizontal-small" alignment-bump="left">
+                                            <lightning-button variant="brand" 
+                                                              label="Assign this Permission Set to a Users" 
+                                                              title="Assign this Permission Set to a User" 
+                                                              onclick={handlePermission} 
+                                                              class="slds-m-left_x-small" 
+                                                              value="Quickbook_Integration_Operational"></lightning-button>
+                                        </lightning-layout-item>
+                                    </lightning-layout>
+                                </div>
+                                <div>
+                                    <lightning-datatable data={operationalUser}
+                                                         columns={columns} 
+                                                         key-field="id" 
+                                                         sorted-by={sortBy}
+                                                         sorted-direction={sortDirection} 
+                                                         onsort={sortOperational} 
+                                                         hide-checkbox-column="true"
+                                                         class="custom-datatable"></lightning-datatable>
+                                </div>
+                            </template>
+                            <template if:false={operationalUser.length}>
+                                <br/><br/><br/>
+                                <c-no-data-cmp info="No data found"></c-no-data-cmp>
+                                <div style="margin-top: 50px; margin-bottom: 20px;">
+                                    <lightning-layout multiple-rows="true" class="slds-align_absolute-center">
+
+                                        <lightning-layout-item padding="horizontal-small" alignment-bump="top">
+                                            <lightning-button variant="brand" 
+                                                              label="Assign this Permission Set to a Users" 
+                                                              title="Assign this Permission Set to a User" 
+                                                              onclick={handlePermission} 
+                                                              class="slds-m-left_x-small" 
+                                                              value="Quickbook_Integration_Operational"></lightning-button>
+                                        </lightning-layout-item>
+                                    </lightning-layout>
+                                </div>
+                            </template>
+                        </lightning-tab>
+                        <lightning-tab label="Quickbook Integration User Read Only" value="three" >
+                            <p>Users with this Permission Set can only view Quickbook data like Invoices &amp; Quickbook Contacts from the various tabs. This will also allow a user to run reports on Quickbook data.</p>
+                            <div class="slds-section slds-is-open">
+                                <template if:true={readOnlyUser.length}>
+                                    <div style="margin-top: 10px; margin-bottom: 20px; ">
+                                        <lightning-layout multiple-rows="true">
+                                            <lightning-layout-item padding="horizontal-small" alignment-bump="left">
+                                                <lightning-button variant="brand" 
+                                                                  label="Assign this Permission Set to a Users" 
+                                                                  title="Assign this Permission Set to a User" 
+                                                                  onclick={handlePermission} 
+                                                                  class="slds-m-left_x-small" 
+                                                                  value="Quickbook_Integration_User_Read_Only"></lightning-button>
+                                            </lightning-layout-item>
+                                        </lightning-layout>
+                                    </div>
+                                    <div class="custom-datatable-container" >
+                                        <lightning-datatable data={readOnlyUser}
+                                                             columns={columns} 
+                                                             key-field="id" 
+                                                             sorted-by={sortBy}
+                                                             sorted-direction={sortDirection} 
+                                                             onsort={sortReadOnly} 
+                                                             hide-checkbox-column="true"></lightning-datatable>
+                                    </div>
+                                </template>
+                            </div>
+                            <template if:false={readOnlyUser.length}>
+                                <br/><br/><br/>
+                                <c-no-data-cmp info="No data found"></c-no-data-cmp>
+                                <div style="margin-top: 50px; margin-bottom: 20px;">
+                                    <lightning-layout multiple-rows="true" class="slds-align_absolute-center ">
+                                        <lightning-layout-item padding="horizontal-small" alignment-bump="top">
+                                            <lightning-button variant="brand" 
+                                                              label="Assign this Permission Set to a Users" 
+                                                              title="Assign this Permission Set to a User" 
+                                                              onclick={handlePermission} 
+                                                              class="slds-m-left_x-small" 
+                                                              value="Quickbook_Integration_User_Read_Only"></lightning-button>
+                                        </lightning-layout-item>
+                                    </lightning-layout>
+                                </div>
+                            </template>
+                        </lightning-tab>
+                    </lightning-tabset>
+                </section>
+            </div>
+
+        </article>
+    </template>
+</template>

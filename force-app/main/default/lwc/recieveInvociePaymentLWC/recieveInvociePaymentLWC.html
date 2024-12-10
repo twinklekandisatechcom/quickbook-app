@@ -1,0 +1,234 @@
+<template>
+    <template if:true={displayComponent}>
+        <lightning-modal-header label="Receive Payment"></lightning-modal-header>
+        <lightning-modal-body class="slds-m-vertical_xx-large">
+            <template if:true={showSpinner}>
+                <lightning-spinner class="slds-is-fixed" alternative-text="Loading" size="large"></lightning-spinner>
+            </template>
+
+            <div>
+                <lightning-layout  multiple-rows>
+                    <lightning-layout-item size="12" class="slds-p-bottom_large">
+                        <div>
+                            <p class="slds-text-heading_large topDiv" style="font-weight:500">{invoiceName}</p>
+                        </div>
+                    </lightning-layout-item>
+                    <lightning-layout-item size="12" class="slds-p-left_medium slds-p-right_medium slds-p-top_x-small slds-size_12-of-12">
+                        <div>
+                            <p class="slds-text-heading_small" style="font-weight: 500;">Customer</p>
+                            <p class="slds-text-heading_small">{invoiceCustomerName}</p>
+                        </div>
+                    </lightning-layout-item>
+                </lightning-layout>
+        
+        <!-- ********* This for the Larger Devices ********* -->    
+            <template if:true={isLargeDeviceType}> 
+                <lightning-layout class="slds-p-left_medium slds-p-right_medium slds-p-top_x-small" multiple-rows>
+                    <lightning-layout-item size="6" class="slds-align_absolute-center">
+                        <lightning-layout class="slds-m-top_small slds-m-bottom_small" multiple-rows>
+                            <lightning-layout-item size="12" class="slds-p-bottom_small slds-align_absolute-left">
+                                <lightning-input style="width: 100%;"
+                                    type="number" 
+                                    label="Amount Paid"
+                                    required
+                                    data-inputname="TransactionAmountPaid"
+                                    onchange={inputHandler}
+                                    formatter="currency"
+                                    step="0.01"
+                                    value={transactionAmountPaid}
+                                    message-when-value-missing="Please enter the amount paid."
+                                ></lightning-input>
+                            </lightning-layout-item>
+                            <lightning-layout-item size="12" class="slds-p-bottom_small slds-align_absolute-left">
+                                <lightning-input 
+                                    type="date" 
+                                    label="Payment Date"
+                                    required
+                                    data-inputname="TransactionDate"
+                                    onchange={inputHandler}
+                                    value={transactionDate}
+                                    message-when-value-missing="Please enter the payment date."
+                                ></lightning-input>
+                            </lightning-layout-item>
+                            <lightning-layout-item size="12" class="slds-p-bottom_small slds-align_absolute-left">
+                                <lightning-combobox
+                                    name="Payment Method"
+                                    label="Payment Method"
+                                    required
+                                    value={paymentMethod}
+                                    data-inputname="PaymentMethod"
+                                    options={paymentMethodOptions}
+                                    onchange={inputHandler} 
+                                    message-when-value-missing="Please select the payment method."
+                                ></lightning-combobox>
+                            </lightning-layout-item>
+                        </lightning-layout>
+                    </lightning-layout-item>
+                    <lightning-layout-item size="6" class="slds-align_absolute-center">
+                        <lightning-layout class="slds-m-top_large slds-m-bottom_xx-large" multiple-rows>
+                            <lightning-layout-item size="12" class="slds-p-bottom_large slds-align_absolute-left">
+                                <div>
+                                    <p class="slds-text-heading_small slds-p-bottom_xx-small slds-align_absolute-center">Invoice Amount</p>
+                                    <p><lightning-formatted-number 
+                                        class="slds-text-heading_large slds-align_absolute-center" style="font-weight: 500;"
+                                        value={invoiceAmount}
+                                        format-style="currency"
+                                        currency-code={invoiceCurrencyCode}>
+                                    </lightning-formatted-number></p><br/>
+                                </div>
+                            </lightning-layout-item>
+                            <lightning-layout-item size="12" class="slds-p-bottom_large slds-align_absolute-center">
+                                <div>
+                                    <p class="slds-text-heading_small  slds-p-bottom_xx-small">Balance Due</p>
+                                    <p><lightning-formatted-number 
+                                        class="slds-text-heading_large slds-align_absolute-center" style="font-weight: 500;"
+                                        value={invoiceBalance}
+                                        format-style="currency"
+                                        currency-code={invoiceCurrencyCode}>
+                                    </lightning-formatted-number></p>
+                                </div>
+                            </lightning-layout-item>
+                            <lightning-layout-item size="12" class="slds-align_absolute-center">
+                                <lightning-input class="slds-p-left_x-large" style="width:100%;"
+                                    type="text" 
+                                    label="Transaction Id"
+                                    data-inputname="TransactionId"
+                                    required
+                                    onchange={inputHandler}
+                                    value={transactionId}
+                                    message-when-value-missing="Please enter the transaction id."
+                                ></lightning-input>
+                            </lightning-layout-item>
+                        </lightning-layout>
+                    </lightning-layout-item>
+                    <lightning-layout-item size="6" class="slds-align_absolute-center slds-m-bottom_medium">
+                        <lightning-layout multiple-rows>
+                            <lightning-layout-item size="6" class="slds-align_absolute-center slds-p-right_small">
+                                <lightning-button
+                                    class="slds-button slds-button_stretch"
+                                    variant="Brand"
+                                    label="PAY"
+                                    stretch
+                                    onclick={paymentHandler}
+                            ></lightning-button>
+                            </lightning-layout-item>
+                            <lightning-layout-item size="6" class="slds-align_absolute-center slds-p-left_small">
+                                <lightning-button
+                                    class="slds-button slds-button_stretch"
+                                    variant="Brand"
+                                    label="CLEAR"
+                                    stretch
+                                    onclick={clearHandler}
+                            ></lightning-button>
+                            </lightning-layout-item>
+                        </lightning-layout>
+                    </lightning-layout-item>
+                </lightning-layout>
+            </template>   
+            
+            
+        <!-- ********* This for the Smaller Devices ********* -->    
+            <template if:false={isLargeDeviceType}>
+                <lightning-layout class="slds-p-left_medium slds-p-right_medium slds-p-top_x-small" multiple-rows>
+                    <lightning-layout-item size="12" class="slds-p-bottom_large slds-align_absolute-left">
+                        <div>
+                            <p class="slds-text-heading_small slds-p-bottom_xx-small slds-align_absolute-center">Invoice Amount</p>
+                            <p><lightning-formatted-number 
+                                class="slds-text-heading_large slds-align_absolute-center" style="font-weight: 500;"
+                                value={invoiceAmount}
+                                format-style="currency"
+                                currency-code={invoiceCurrencyCode}>
+                            </lightning-formatted-number></p>
+                        </div>
+                    </lightning-layout-item>
+                    <lightning-layout-item size="12" class="slds-p-bottom_large slds-align_absolute-center">
+                        <div>
+                            <p class="slds-text-heading_small  slds-p-bottom_xx-small">Balance Due</p>
+                            <p><lightning-formatted-number 
+                                class="slds-text-heading_large slds-align_absolute-center" style="font-weight: 500;"
+                                value={invoiceBalance}
+                                format-style="currency"
+                                currency-code={invoiceCurrencyCode}>
+                            </lightning-formatted-number></p>
+                        </div>
+                    </lightning-layout-item>
+                    <lightning-layout-item size="12" class="slds-p-bottom_small slds-align_absolute-left">
+                        <lightning-input style="width: 100%;"
+                                    type="number" 
+                                    label="Amount Paid"
+                                    required
+                                    data-inputname="TransactionAmountPaid"
+                                    onchange={inputHandler}
+                                    formatter="currency"
+                                    step="0.01"
+                                    value={transactionAmountPaid}
+                                    message-when-value-missing="Please enter the amount paid."
+                                ></lightning-input>
+                    </lightning-layout-item>
+                    <lightning-layout-item size="12" class="slds-p-bottom_small slds-align_absolute-left">
+                        <lightning-input 
+                            type="date" 
+                            label="Payment Date"
+                            required
+                            data-inputname="TransactionDate"
+                            onchange={inputHandler}
+                            value={transactionDate}
+                            message-when-value-missing="Please enter the payment date."
+                        ></lightning-input>
+                    </lightning-layout-item>
+                    <lightning-layout-item size="12" class="slds-p-bottom_small slds-align_absolute-left">
+                        <lightning-combobox
+                            name="Payment Method"
+                            label="Payment Method"
+                            required
+                            value={paymentMethod}
+                            data-inputname="PaymentMethod"
+                            options={paymentMethodOptions}
+                            onchange={inputHandler} 
+                            message-when-value-missing="Please select the payment method."
+                        ></lightning-combobox>
+                    </lightning-layout-item>
+                    <lightning-layout-item size="12" class="slds-align_absolute-center">
+                        <lightning-input class="" style="width:100%;"
+                            type="text" 
+                            label="Transaction Id"
+                            data-inputname="TransactionId"
+                            required
+                            onchange={inputHandler}
+                            value={transactionId}
+                            message-when-value-missing="Please enter the transaction id."
+                        ></lightning-input>
+                    </lightning-layout-item>
+
+
+                    <!--BUTTONS-->
+                    <lightning-layout-item size="6" class="slds-align_absolute-center slds-m-top_small">
+                        <lightning-layout multiple-rows>
+                            <lightning-layout-item size="6" class="slds-p-right_small">
+                                <lightning-button
+                                    class="slds-button slds-button_stretch"
+                                    variant="Brand"
+                                    label="PAY"
+                                    stretch
+                                    onclick={paymentHandler}
+                            ></lightning-button>
+                            </lightning-layout-item>
+                            <lightning-layout-item size="6" class="">
+                                <lightning-button
+                                    class="slds-button slds-button_stretch"
+                                    variant="Brand"
+                                    label="CLEAR"
+                                    stretch
+                                    onclick={clearHandler}
+                            ></lightning-button>
+                            </lightning-layout-item>
+                        </lightning-layout>
+                    </lightning-layout-item>
+                </lightning-layout>
+            </template>
+            
+        </div>
+
+        </lightning-modal-body>
+    </template>    
+</template>

@@ -1,0 +1,63 @@
+article.slds-card.slds-card_narrow {
+    padding: 20px;
+}
+.slds-card__header.slds-grid{
+    background-color: #8080802b;
+    border-radius: 5px;
+    padding: 18px;
+}
+span.slds-text-heading_small.slds-truncate{
+    font-size: 20px;
+}
+header.slds-modal__header {
+    background-color: #2CA01C;
+    color: #fff;
+    font-weight: 600;
+}
+footer.slds-modal__footer {
+    text-align: center;
+}
+.slds-modal__footer button.slds-button, p button.slds-button{
+    background-color: #2CA01C;
+    margin: 5px;
+    color: #fff;
+}
+.rowSection{
+    display: flex;
+}
+.customCard article.slds-card.slds-card_narrow {
+    background-color: #F4F5F8;
+}
+.cardHeading{
+    font-size: 18px;
+    font-weight: 500;
+    background-color: #80808033;
+    padding: 18px;
+    text-align: center;
+}
+.mailingAddress {
+    border: 1px solid #80808047;
+    border-radius: 5px;
+    margin: 12px;
+    padding: 8px 8px 22px 8px;
+}
+.mailingText{
+    text-align: left !important;
+    font-weight: 600;
+    padding: 10px 0px 0px 13px;
+}
+label.slds-form-element__label,label.slds-form-element__label.slds-no-flex {
+    font-weight: 600 !important;
+}
+.my-icon {
+    --sds-c-button-brand-color-foreground-default: #2CA01C;
+}
+.spinnerIcon{
+    --lwc-brandPrimary: #2CA01C;
+}
+.slds-modal__container.modalDiv {
+    margin: 0 auto;
+    width: 60%;
+    max-width: 55%;
+    min-width: 25%;
+}

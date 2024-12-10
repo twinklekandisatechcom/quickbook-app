@@ -1,0 +1,111 @@
+<template>
+    <template if:true={showLoading}>
+        <lightning-spinner class="slds-is-fixed" alternative-text="Loading..." variant="brand"></lightning-spinner>
+    </template>
+    <article class="slds-card currencyConfig">
+        <div class="slds-card__header slds-grid">
+            <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                <lightning-icon icon-name="utility:money" alternative-text="Event" variant="success">
+                </lightning-icon>
+                <div class="slds-media__body">
+                    <h2 class="slds-card__header-title slds-m-left_small">
+                        <a class="slds-card__header-link slds-truncate" title="Currency Configuration">
+                            <span>Currency Configuration</span>
+                        </a>
+                    </h2>
+                </div>
+            </header>
+        </div>
+        <div class="slds-card__body" >
+            <section class="slds-card  "  >
+                <template if:true={isMultiCurrencyOrg}>
+                    <div class="slds-card__body slds-card__body_inner">
+                        <div class="slds-section-title_divider slds-m-vertical_medium">
+                            Currency Synchronization
+                        </div>
+                        <div style=" padding-bottom: 15px;" class="slds-grid slds-gutters">
+                            <div class="slds-col">
+                                <p>
+                                    <lightning-icon icon-name="utility:info_alt" 
+                                                    alternative-text="info" 
+                                                    size="small"
+                                                    title="Sync Currency from QB to SF"></lightning-icon> &nbsp;&nbsp;
+                                    <b>Please click on Sync to keep Quickbook and Salesforce currencies in sync.</b>
+                                </p>
+                            </div>
+                            <div class="slds-col">
+                                <lightning-button-icon style="padding-left:82%" 
+                                                       name="RefCurrencies"
+                                                       icon-name="utility:refresh" 
+                                                       variant="brand" 
+                                                       alternative-text="Refresh Currency"
+                                                       onclick={syncQbInvoiceObject}></lightning-button-icon>
+                            </div>
+                        </div>
+                        <div class="slds-grid slds-gutters" >
+                            <div class="slds-col">
+                                <template if:true={showCurr}>
+                                    <div>
+                                        <table> 
+                                            <thead style="position:sticky; top:0px; z-index: 1;"> <!-- class="stickyHeader"-->
+                                                <tr>
+                                                    <th>Salesforce currencies</th>
+                                                    <th>QuickBook Currencies</th>
+                                                    <th class="actionColumn">Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <template for:each={currencyObj} for:item="curr">
+                                                    <tr key={curr.salesCurr}>
+                                                        <td>{curr.salesCurr}</td>
+                                                        <td>{curr.QBCurr}</td>
+                                                        <td>
+                                                            <lightning-button variant="brand" 
+                                                                              label="Sync" 
+                                                                              title="Sync" 
+                                                                              onclick={handleSync} 
+                                                                              class="slds-m-left_x-small" 
+                                                                              disabled={curr.syncBtn} 
+                                                                              value={curr.btnValue}></lightning-button>
+                                                        </td>
+                                                    </tr>
+                                                </template>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+            </section>
+        </div>
+        <div>
+            <c-modal-pop-up show-modal={showModal} 
+                            show-positive={showPositiveButton}
+                            show-negative={showNegativeButton}
+                            positive-button-label={positiveButtonLabel}
+                            onpositive={closeModal}
+                            onclose={closeModal}>
+                <div slot="header">
+                    <h2 slot="header" id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Create Currency in Salesforce</h2>
+                </div>
+                <div slot="body">
+                    <ol class="slds-list_ordered">
+                        <li>Create new currency by clicking on <lightning-button variant="brand" 
+                                                                                 icon-name="utility:forward_up" 
+                                                                                 label="Open Currency layout" 
+                                                                                 title="Open Currency layout" 
+                                                                                 class="slds-m-left_x-small" 
+                                                                                 onclick={OpenCurrencyLayout}></lightning-button></li>
+                        <li>Click on new.</li>
+                        <li>Fill up currency type, currency rate and Decimal places fields.</li>
+                        <li>Make Sure that currency rate should be same as currency exchange rate at QuickBook for the same currency.</li>
+                        <li>Click on Save.</li>
+                        <li>Create all the listed currency same way.</li>
+                    </ol>                            
+                </div>
+            </c-modal-pop-up>
+        </div>
+    </article>
+</template>

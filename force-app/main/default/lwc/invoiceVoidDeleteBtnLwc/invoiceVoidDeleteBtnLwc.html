@@ -1,0 +1,34 @@
+<template>
+    <lightning-modal-header label="Delete Quickbook Invoice"></lightning-modal-header>
+    <lightning-modal-body class="slds-m-vertical_xx-large">
+        <template if:true={showSpinner}>
+            <lightning-spinner class="slds-is-fixed" alternative-text="Loading" size="large"></lightning-spinner>
+        </template>
+
+        <div>
+            <div class="MessageTxtCls slds-text-align_center slds-m-top_medium">{displayMessageTxt}</div>
+            <lightning-layout class="slds-m-top_large slds-m-bottom_xx-large">
+                <lightning-layout-item size="6" class="slds-p-around_medium slds-align_absolute-center">
+                    <lightning-button
+                        class="slds-button "
+                        variant="brand"
+                        label={voidInvoiceBtnName}
+                        onclick={processBtnHandler}
+                        ></lightning-button> 
+                        <!-- disabled={disableVoidBtn} -->
+                </lightning-layout-item>
+                <lightning-layout-item size="6" class="slds-p-around_medium slds-align_absolute-center">
+                    <lightning-button
+                        class="slds-button"
+                        variant="brand"
+                        label={deleteInvoiceBtnName}
+                        onclick={invoiceDeleteHandler}
+                        ></lightning-button> 
+                        <!-- disabled={disableDeleteBtn} -->
+                </lightning-layout-item>
+            </lightning-layout>
+        </div>
+        
+    </lightning-modal-body>
+    
+</template>

@@ -1,0 +1,56 @@
+.invoiceConfig .slds-card__header.slds-grid {
+    border-bottom: 3px solid #2CA01C;
+    box-shadow: 3px 0px 3px #2CA01C;
+    padding: 22px;
+    margin-top: -10px;
+    margin-left: -4px;
+    
+}
+.slds-section-title_divider.slds-m-top_medium.slds-m-bottom_medium{
+    font-size: .75rem;
+    line-height: 1.25;
+    color: black;
+    text-transform: uppercase;
+    letter-spacing: .0625rem;
+    padding: 0.5rem 1rem;
+    background: var(--slds-g-color-neutral-base-95, rgb(243, 243, 243));
+}
+td{
+    padding: 7px;
+}
+th{
+    padding: 12px 7px;
+}
+.objectSelection, .lineItemDiv {
+    display: flex;
+}
+header.slds-modal__header{
+    background-color: #2CA01C;
+    color: #fff;
+    font-weight: bold;
+}
+footer.slds-modal__footer button.slds-button.slds-button_brand {
+    background-color: #2CA01C;
+    border: none;
+}
+footer.slds-modal__footer button.slds-button.slds-button_neutral {
+    border-color: #2CA01C;
+    color: #2CA01C;
+}
+.slds-modal__container {
+    width: 55%;
+    max-width: 70%;
+}
+td:last-child {
+    width: 60%;
+}
+td:child-child {
+    width: 40%;
+}
+.readonlyClass{
+    --slds-c-icon-color-foreground-default: #009DDC;
+    padding: 0px 4px 0px 0px;
+}
+.noteReadonlyIcon{
+    --slds-c-icon-color-foreground-default: #FF0000;
+}

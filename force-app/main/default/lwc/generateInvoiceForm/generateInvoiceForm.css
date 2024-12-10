@@ -1,0 +1,88 @@
+.cardHeading{
+    font-size: 18px;
+    font-weight: 500;
+    background-color: #80808033;
+    padding: 18px;
+    text-align: center;
+}
+.billingSectionDetails {
+    width: 100%;
+    padding: 20px;
+    margin: auto;
+    display: inline-flex;
+}
+.billingSectionDetails > div {
+    min-width: 31.44%;
+    padding: 20px 0px 20px 0px !important;
+    max-width: 60%;
+    margin: 10px;
+    box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
+    border-radius: 5px;
+}
+.billingSectionDetails > div:last-child{
+    border: none !important;
+}
+.billingSectionDetails div > p:first-child {
+    padding-bottom: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    color: green;
+}
+.billingSectionDetails div div {
+        width: fit-content;
+        padding-left: 35px;
+        padding-right: 35px;
+}
+.rowSection {
+    display: flex;
+    width: 100%;
+}
+.invoiceForm{
+    border: 1px solid #80808047;
+    border-radius: 5px;
+    margin: 12px;
+    padding: 8px 8px 22px 8px;
+}
+.productTable th, .productTable td {
+    padding: 5px;
+}
+/*lightning-button-icon.slds-m-left_xx-small {
+    --sds-c-button-color-background: #2CA01C;
+}*/
+button.slds-button.slds-button_icon.slds-button_icon-brand {
+    border: 2px solid red;
+}
+.subtotalSec{
+    font-size: 18px;
+    font-weight: 600;
+}
+.discountSection{
+    display: inline-flex;
+    align-items: baseline;
+    width: 100%;
+}
+button.slds-button.slds-button_neutral{
+    background-color: #2CA01C;
+    margin: 5px;
+    color: #fff;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+table.productTable{
+    margin-left: 10px;
+    margin-right: 10px;
+}
+@media only screen and (max-width: 767px) {
+  div.billingSectionDetails{
+      display: grid;
+  }
+  .billingSectionDetails > div {
+        max-width: 100%;
+   }
+   lightning-input.mobInput{
+       width: max-content;
+   }
+}
+table .alignmentTr td {
+    vertical-align: top;
+}

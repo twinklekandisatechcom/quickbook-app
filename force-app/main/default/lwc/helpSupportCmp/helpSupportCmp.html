@@ -1,0 +1,122 @@
+<template>
+    <template if:true={showLoading}>
+        <lightning-spinner class="slds-is-fixed" alternative-text="Loading..." variant="brand"></lightning-spinner>
+    </template>
+    <template if:false={showLoading}>
+        <article class="slds-card helpSupport">
+            <div class="slds-card__header slds-grid">
+                <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                    <lightning-icon icon-name="utility:chat" 
+                                    alternative-text="Event" variant="success"
+                                    ></lightning-icon>
+                    <div class="slds-media__body">
+                        <h2 class="slds-card__header-title slds-m-left_small">
+                            <a class="slds-card__header-link slds-truncate" title="Help and Support">
+                                <span>Help and Support</span>
+                            </a>
+                        </h2>
+                    </div>
+                </header>
+            </div>
+            <div class="slds-card__body slds-card__body_inner">
+                <div class="slds-section-title_divider slds-m-top_medium slds-m-bottom_medium">
+                    <lightning-icon icon-name="utility:help" 
+                                    alternative-text="Help" 
+                                    title="Help" 
+                                    size="small"></lightning-icon>
+                    &nbsp;&nbsp;Help
+                </div>
+                <div>
+                    Please refer this Document for help regarding any functionality
+                </div>
+                <br/>
+                <div class="slds-section-title_divider slds-m-top_medium slds-m-bottom_medium">
+                    <lightning-icon icon-name="utility:workforce_engagement" 
+                                    alternative-text="Support" 
+                                    title="Support" 
+                                    size="small"></lightning-icon>
+                    &nbsp;&nbsp;Contact Support
+                </div>
+                <div>
+                    <div class="slds-grid slds-gutters">
+                        <div class="slds-col" style="width: 50%;">
+                            <lightning-input name="FirstName"
+                                             type="text" 
+                                             label="First Name" 
+                                             placeholder="Enter First Name" 
+                                             value={supportData.firstName} 
+                                             onchange={handleChange} 
+                                             required
+                                             readonly></lightning-input>
+                            <br/>
+                            <lightning-input name="Email" 
+                                             type="email" 
+                                             label="Email" 
+                                             placeholder="Enter Email" 
+                                             value={supportData.email} 
+                                             onchange={handleChange} 
+                                             required
+                                             readonly></lightning-input>
+                            <br/>
+                            <lightning-file-upload label="Upload attachments"
+                                                   name="fileUploader"
+                                                   onuploadfinished={handleUploadFinished}
+                                                   multiple></lightning-file-upload>
+                            <div class={fontColour}>{fileMsg}</div>
+                            <div class='slds-m-top_medium'>
+                                <template for:each={fileData} for:item="file" for:index="index">
+                                        <lightning-pill key={file.contentVersionId}
+                                                        label={file.name}
+                                                        name={index}
+                                                        onremove={handleRemove} 
+                                                        class='slds-m-right_small'>
+                                            <lightning-icon icon-name="utility:file" 
+                                                            alternative-text="Uploaded File"></lightning-icon>
+                                        </lightning-pill>
+                                </template>
+                            </div>
+                        </div>
+                        <div class="slds-col" style="width: 50%;">
+                            <lightning-input name="LastName"
+                                             type="text"
+                                             label="Last Name" 
+                                             placeholder="Enter Last Name" 
+                                             value={supportData.lastName} 
+                                             onchange={handleChange} 
+                                             required
+                                             readonly></lightning-input>
+                            <br/>
+                            <div class="slds-m-bottom_small slds-text-body_small">
+                                <span class="slds-text-color_error">* </span>What type of concern?
+                            </div>
+                            <lightning-combobox name="EnquiryType"
+                                                label="What type of concern?"
+                                                placeholder="-- Please select the type of concern --"
+                                                value={supportData.enquiryValue}
+                                                options={enquiryOptions}
+                                                onchange={handleChange}
+                                                variant="label-hidden"
+                                                required></lightning-combobox>
+                        </div>
+                    </div>
+                    <br/>
+                    <lightning-textarea name="Description" 
+                                        label="Description" 
+                                        placeholder="Enter Description here..." 
+                                        maxlength="300" 
+                                        value={supportData.description} 
+                                        onchange={handleChange} 
+                                        message-when-too-long="A maximum of 300 characters are allowed in a description."></lightning-textarea>
+                    <br/>
+                    <div class="slds-align_absolute-center">
+                        <lightning-button variant="brand" 
+                                          label="Submit" 
+                                          title="Submit" 
+                                          onclick={handleSubmit}
+                                          if:true={supportData.enquiryValue}></lightning-button>
+                    </div>
+                </div>
+            </div>
+        </article>
+    </template>
+</template>

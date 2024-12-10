@@ -1,0 +1,37 @@
+.permissionSet .slds-card__header.slds-grid {
+    border-bottom: 3px solid #2CA01C;
+    box-shadow: 3px 0px 3px #2CA01C;
+    padding: 22px;
+    margin-top: -10px;
+    margin-left: -4px;
+}
+
+p{
+    margin-left: 12px;
+    margin-right: 12px;
+}
+
+/*.custom-datatable {
+    overflow-x: hidden;
+}
+
+.custom-scrollbar {
+    overflow: hidden !important;
+}
+
+.custom-datatable-container {
+    overflow-x: auto;
+}
+
+/* .custom-datatable-container ::-webkit-scrollbar {
+    display: none;
+} */
+
+/*.custom-datatable-container ::-webkit-overflow-scrolling {
+    display: none;
+    overflow-x: hidden;              
+}
+.custom-datatable-container .slds-scrollable_x {
+    display: none;
+    overflow-x: hidden;              
+}*/

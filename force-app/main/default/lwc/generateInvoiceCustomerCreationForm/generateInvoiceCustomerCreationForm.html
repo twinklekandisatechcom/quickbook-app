@@ -1,0 +1,326 @@
+<template>
+    <div class="spinner">
+        <template if:true={isLoading}>
+             <lightning-spinner class="spinnerIcon slds-is-fixed" alternative-text="Loading" variant="brand" size="large">
+             </lightning-spinner>
+        </template>
+    </div>    
+    
+    <lightning-card  variant="Narrow" class="customCard" title="Generate QB Invoice" icon-name="action:quote">
+        <div class="customerSection" if:false={showInvoiceForm}>
+            <p class="cardHeading">QB Customer for this Invoice</p>
+            <!-- customer combobox -->
+            <div class="slds-card slds-p-around_medium">
+                <div class="rowSection">
+                    <!-- customer combobox -->
+                    <div class="slds-form-element slds-col slds-m-bottom--small slds-size_6-of-12 slds-p-horizontal--small">
+                        <div class="slds-form-element__control">
+                            <template if:true={flagForCustomerList}>
+                                <label class="slds-form-element__label" for="text-input-id-47">
+                                <b>Select Customer</b></label>
+                                <c-multi-select-pick-list
+                                                            onselectoption={handleCustomerChange} 
+                                                            options={picklistOrdered} 
+                                                            selected-value={selectedCustomer} placeholder-data="Please Select Customer"
+                                label=""></c-multi-select-pick-list>
+                            </template>
+                            <!-- <lightning-combobox name="Customer"
+                                                label=""
+                                                value={customerInvoiceData.Id}
+                                                placeholder="Select Customer"
+                                                options={picklistOrdered}
+                                                onchange={handleCustomerChange} variant = "label-hidden"></lightning-combobox> -->
+                        </div>
+                    </div>
+                    
+                    <!-- customer combobox -->
+                    <!-- customer email box-->
+                    <div class="slds-form-element slds-col slds-size_6-of-12 slds-m-bottom--small slds-p-horizontal--small">
+                        <label class="slds-form-element__label" for="text-input-id-47">Bill Email</label>
+                        <lightning-helptext content="You can send to more than one address by seperating emails with comma"></lightning-helptext>
+                        <div class="slds-form-element__control">
+                            <lightning-input variant = "label-hidden" label="Email" name="Email" value={customerInvoiceData.Email} onchange={actionInvoiceCustomerChange} hide-label></lightning-input>
+                        </div>
+                    </div>
+                    <!-- customer email box-->
+                </div>  
+                {recordId}
+                <template if:true={setAddressToggleVisibility}>
+                    <p class="mailingText">Choose Address while creating Invoice</p>
+                    <lightning-radio-group
+                            label="" variant = "label-hidden" class="slds-form-element slds-p-left_medium slds-m-bottom--small slds-p-top_small"
+                            options={invoiceAddressOption} onchange={actionInvoiceCustomerChange} name="invoiceAddress"
+                            value={invoiceAddressValue}
+                            type="radio"></lightning-radio-group>
+                </template>
+                <p class="mailingText">Billing Address</p>
+                <div class="mailingAddress">
+                    <div class="rowSection">
+                        <div class="slds-p-horizontal--small slds-col slds-size_12-of-12">
+                            <div class="slds-form-element">
+                            <lightning-input label="Billing Street address" value={customerInvoiceData.BillingLine} name="BillingLine" onchange={actionInvoiceCustomerChange}></lightning-input>
+                            </div>
+                        </div>
+                    </div>
+                
+                    <div class="rowSection">
+                        <div class="slds-p-horizontal--small slds-col slds-size_6-of-12">
+                            <div class="slds-form-element">
+                            <lightning-input label="Billing City" value={customerInvoiceData.BillingCity} name="BillingCity" onchange={actionInvoiceCustomerChange}></lightning-input>
+                            </div>
+                        </div>
+                        <div class="slds-p-horizontal--small slds-col slds-size_6-of-12">
+                            <div class="slds-form-element">
+                            <lightning-input label="Billing State" value={customerInvoiceData.BillingCountrySubDivisionCode} name="BillingCountrySubDivisionCode" onchange={actionInvoiceCustomerChange}></lightning-input>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="rowSection">
+                        <div class="slds-p-horizontal--small slds-col slds-size_6-of-12">
+                            <div class="slds-form-element">
+                            <lightning-input label="Billing ZipCode" value={customerInvoiceData.BillingPostalCode} onchange={actionInvoiceCustomerChange} name="BillingPostalCode"></lightning-input>
+                            </div>
+                        </div>
+                        <div class="slds-p-horizontal--small slds-col slds-size_6-of-12">
+                            <div class="slds-form-element">
+                            <lightning-input label="Billing Country" value={customerInvoiceData.BillingCountry} onchange={actionInvoiceCustomerChange} name="BillingCountry"></lightning-input>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <p class="mailingText">Shipping Address</p>
+                <lightning-input class="slds-form-element slds-p-left_medium slds-p-top_small" type="checkbox" label="Same as billing address" onchange={actionInvoiceCustomerChange} value={sameAsBillingAddress} checked={sameAsBillingAddress} name="sameAsBillingAddress"></lightning-input>
+                <template if:false={sameAsBillingAddress}>
+                    <div class="mailingAddress">
+                        <div class="rowSection">
+                            <div class="slds-p-horizontal--small slds-col slds-size_12-of-12">
+                                <div class="slds-form-element">
+                                <lightning-input label="Shipping Street address" value={customerInvoiceData.ShippingLine} name="ShippingLine" onchange={actionInvoiceCustomerChange}></lightning-input>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="rowSection">
+                            <div class="slds-p-horizontal--small slds-col slds-size_6-of-12">
+                                <div class="slds-form-element">
+                                <lightning-input label="Shipping City" value={customerInvoiceData.ShippingCity} name="ShippingCity" onchange={actionInvoiceCustomerChange}></lightning-input>
+                                </div>
+                            </div>
+                            <div class="slds-p-horizontal--small slds-col slds-size_6-of-12">
+                                <div class="slds-form-element">
+                                <lightning-input label="Shipping State	" value={customerInvoiceData.ShippingCountrySubDivisionCode} name="ShippingCountrySubDivisionCode" onchange={actionInvoiceCustomerChange}></lightning-input>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="rowSection">
+                            <div class="slds-p-horizontal--small slds-col slds-size_6-of-12">
+                                <div class="slds-form-element">
+                                <lightning-input label="Shipping ZipCode" value={customerInvoiceData.ShippingPostalCode} name="ShippingPostalCode"  onchange={actionInvoiceCustomerChange}></lightning-input>
+                                </div>
+                            </div>
+                            <div class="slds-p-horizontal--small slds-col slds-size_6-of-12">
+                                <div class="slds-form-element">
+                                <lightning-input label="Shipping Country" value={customerInvoiceData.ShippingCountry} name="ShippingCountry" onchange={actionInvoiceCustomerChange}></lightning-input>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+                <template if:true={oppid}>
+                    <p class="mailingText">Create invoice using opportunity products</p>
+                    <lightning-radio-group
+                            label="" variant = "label-hidden" class="slds-form-element slds-p-left_medium slds-p-top_small"
+                            options={invoiceProductOption} onchange={actionInvoiceCustomerChange} name="invoiceType"
+                            value={invoiceProductValue}
+                            type="radio"></lightning-radio-group>
+                </template>
+            </div>
+            
+            <!-- Customer form popup -->
+            <template if:true={isShowModal}>
+                <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container modalDiv">
+                <!-- modal header start -->
+                <header class="slds-modal__header">
+                    <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick={hideModalBox}>
+                        <lightning-icon icon-name="utility:close"
+                        alternative-text="close"
+                        variant="inverse"
+                        size="small" ></lightning-icon>
+                        <span class="slds-assistive-text">Close</span>
+                    </button>
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Create New Customer in QB</h2>
+                </header>
+                <template if:true={isLoading}>
+                    <lightning-spinner class="spinnerIcon slds-is-fixed" alternative-text="Loading" variant="brand" size="large"></lightning-spinner>
+                </template>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                    <div class="rowSection">
+                        <div class="slds-p-horizontal--small slds-col slds-size_4-of-12 slds-m-bottom--small">
+                            <div class="slds-form-element">
+                            <lightning-input label="Given Name" name="givenName" onchange={actionContactValue} class="validate" required={RequiredFieldsNames.GivenName}></lightning-input>
+                            </div>
+                        </div>
+                        <div class="slds-p-horizontal--small slds-col slds-size_4-of-12 slds-m-bottom--small">
+                            <div class="slds-form-element">
+                            <lightning-input label="Middle Name" name="middleName" onchange={actionContactValue} class="validate" required={RequiredFieldsNames.MiddleName}></lightning-input>
+                            </div>
+                        </div>
+                        
+                        <div class="slds-p-horizontal--small slds-col slds-size_4-of-12 slds-m-bottom--small">
+                            <div class="slds-form-element">
+                            <lightning-input label="Family Name" name="familyName" onchange={actionContactValue} class="validate" required={RequiredFieldsNames.FamilyName}></lightning-input>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="rowSection">
+                         <div class="slds-p-horizontal--small slds-col slds-size_12-of-12 slds-m-bottom--small">
+                            <div class="slds-form-element">
+                            <lightning-input label="Dispaly Name" name="displayName" onchange={actionContactValue} value={customerData.personalInfo.displayName} class="validate" required></lightning-input>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="rowSection">
+                        <div class="slds-p-horizontal--small slds-col slds-size_6-of-12 slds-m-bottom--small">
+                            <div class="slds-form-element">
+                            <lightning-input label="Email" placeholder="username@example.com" pattern="[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,}$" type="email" name="email" onchange={actionContactValue} class="validate" required={RequiredFieldsNames.Email}></lightning-input>
+                            </div>
+                        </div>
+                        <div class="slds-p-horizontal--small slds-col slds-size_6-of-12 slds-m-bottom--small">
+                            <div class="slds-form-element">
+                            <lightning-input label="Phone" name="phone" onchange={actionContactValue} class="validate" required={RequiredFieldsNames.Phone}></lightning-input>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="rowSection">
+                        <div class="slds-p-horizontal--small slds-col slds-size_6-of-12 slds-m-bottom--small">
+                            <div class="slds-form-element">
+                            <lightning-input label="Mobile" name="mobile" onchange={actionContactValue} class="validate" required={RequiredFieldsNames.Mobile}></lightning-input>
+                            </div>
+                        </div>
+                        <div class="slds-p-horizontal--small slds-col slds-size_6-of-12 slds-m-bottom--small">
+                            <div class="slds-form-element">
+                            <lightning-input label="Fax"  name="fax" onchange={actionContactValue} required={RequiredFieldsNames.Fax} class="validate"></lightning-input>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="rowSection">
+                        <div class="slds-p-horizontal--small slds-col slds-size_6-of-12 slds-m-bottom--small">
+                            <div class="slds-form-element">
+                            <lightning-input label="Website" name="website" onchange={actionContactValue} required={RequiredFieldsNames.Website} class="validate"></lightning-input>
+                            </div>
+                        </div>
+                        <div class="slds-p-horizontal--small slds-col slds-size_6-of-12 slds-m-bottom--small">
+                            <div class="slds-form-element">
+                            <lightning-input label="Company Name" name="companyName" onchange={actionContactValue} required={RequiredFieldsNames.CompanyName} class="validate"></lightning-input>
+                            </div>
+                        </div>
+                    </div>
+                    
+                     <div class="rowSection">
+                        <div class="slds-p-horizontal--small slds-col slds-size_12-of-12 slds-m-bottom--small">
+                            <div class="slds-form-element">
+                            <lightning-input label="Customer is Taxable" name="isTaxable" onchange={actionContactValue} class="validate" type="checkbox" required={RequiredFieldsNames.IsTaxable} checked="checked"></lightning-input>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="rowSection" if:true={enableCurrencySelection}>
+                        <div class="slds-p-horizontal--small slds-col slds-size_12-of-12 slds-m-bottom--small">
+                            <lightning-combobox  name="currencyCode"
+                                        label="Currency" value={CurrencyCode} placeholder="Select Currency"
+                                        options={currencyOptions} onchange={actionContactValue}></lightning-combobox>
+                        </div>
+
+                    </div>
+                    <p class="mailingText">Billing Address</p>
+                    <div class="rowSection">
+                        <div class="slds-p-horizontal--small slds-col slds-size_12-of-12 slds-m-bottom--small">
+                            <div class="slds-form-element">
+                            <lightning-input label="Billing Street address" name="billingLine" variant= 'hidden-label' onchange={actionContactValue} class="validate" required={RequiredFieldsNames.BillingLine}></lightning-input>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="rowSection">
+                        <div class="slds-p-horizontal--small slds-col slds-size_6-of-12 slds-m-bottom--small">
+                            <div class="slds-form-element">
+                            <lightning-input label="Billing City" name="billingCity" onchange={actionContactValue} required={RequiredFieldsNames.BillingCity} class="validate"></lightning-input>
+                            </div>
+                        </div>
+                        <div class="slds-p-horizontal--small slds-col slds-size_6-of-12 slds-m-bottom--small">
+                            <div class="slds-form-element">
+                            <lightning-input label="Billing State" name="billingCountrySubDivisionCode" onchange={actionContactValue} class="validate" required={RequiredFieldsNames.BillingCountrySubDivisionCode}></lightning-input>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="rowSection">
+                        <div class="slds-p-horizontal--small slds-col slds-size_6-of-12 slds-m-bottom--small">
+                            <div class="slds-form-element">
+                            <lightning-input label="Billing ZipCode" name="billingPostalCode" onchange={actionContactValue} class="validate" required={RequiredFieldsNames.BillingPostalCode}></lightning-input>
+                            </div>
+                        </div>
+                        <div class="slds-p-horizontal--small slds-col slds-size_6-of-12 slds-m-bottom--small">
+                            <div class="slds-form-element">
+                            <lightning-input label="Billing Country" name="billingCountry" onchange={actionContactValue} class="validate" required={RequiredFieldsNames.BillingCountry}></lightning-input>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="mailingText">Shipping Address</p>
+                    <lightning-input class="slds-form-element slds-p-left_medium slds-p-top_small" type="checkbox" label="Same as billing address" onchange={actionContactValue} value={sameAsBillingAddressContact} checked={sameAsBillingAddressContact} name="contactSameAsBilling"></lightning-input>
+                    <template if:false={sameAsBillingAddressContact}>
+                        <div class="rowSection slds-p-top_small">
+                            <div class="slds-p-horizontal--small slds-col slds-size_12-of-12 slds-m-bottom--small">
+                                <div class="slds-form-element">
+                                <lightning-input label="Shipping Street address" name="shippingLine" onchange={actionContactValue} class="validate" required={RequiredFieldsNames.ShippingLine}></lightning-input>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="rowSection">
+                            <div class="slds-p-horizontal--small slds-col slds-size_6-of-12 slds-m-bottom--small">
+                                <div class="slds-form-element">
+                                <lightning-input label="Shipping City" name="shippingCity" onchange={actionContactValue} class="validate" required={RequiredFieldsNames.ShippingCity}></lightning-input>
+                                </div>
+                            </div>
+                            <div class="slds-p-horizontal--small slds-col slds-size_6-of-12 slds-m-bottom--small">
+                                <div class="slds-form-element">
+                                <lightning-input label="Shipping State" name="shippingCountrySubDivisionCode" class="validate" onchange={actionContactValue} required={RequiredFieldsNames.ShippingCountrySubDivisionCode}></lightning-input>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="rowSection">
+                            <div class="slds-p-horizontal--small slds-col slds-size_6-of-12 slds-m-bottom--small">
+                                <div class="slds-form-element">
+                                <lightning-input label="Shipping ZipCode" name="shippingPostalCode" class="validate" onchange={actionContactValue} required={RequiredFieldsNames.ShippingPostalCode}></lightning-input>
+                                </div>
+                            </div>
+                            <div class="slds-p-horizontal--small slds-col slds-size_6-of-12 slds-m-bottom--small">
+                                <div class="slds-form-element">
+                                <lightning-input label="Shipping Country" name="shippingCountry" onchange={actionContactValue} class="validate" required={RequiredFieldsNames.ShippingCountry}></lightning-input>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+
+                <footer class="slds-modal__footer">
+                    <button class="slds-button slds-button_neutral" onclick={actionInsertContact}>Save</button>
+                    <button class="slds-button slds-button_neutral" onclick={hideModalBox}>Cancel</button>
+                </footer>
+
+                </div>
+                </section>
+                <div class="slds-backdrop slds-backdrop_open"></div>
+            </template>
+            <p slot="footer" style="text-align: center;">
+                <!-- <button class="slds-button slds-button_neutral" onclick={backHandler}>Back</button> -->
+                <button class="slds-button slds-button_neutral" onclick={actionClearInvoiceCustomer}>Clear</button>
+                <button class="slds-button slds-button_neutral" onclick={actionSaveInvoiceCustomer}>Next</button>
+               
+            </p>
+        </div>
+        <template if:true={showInvoiceForm}>
+            <c-generate-invoice-form get-customer-invoice={customerInvoiceData} get-accid={accid} get-oppid={oppid} get-opaccid={opaccid} onmyevent={handleResponse} record-id={recordId}></c-generate-invoice-form>
+        </template>
+        
+    </lightning-card>
+</template>

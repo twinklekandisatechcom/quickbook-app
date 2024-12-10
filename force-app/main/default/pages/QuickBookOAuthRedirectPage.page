@@ -1,0 +1,2 @@
+<apex:page standardController="Quickbook_Info__c" extensions="QuickBooksIntegerationController" action="{!fetchAccessToken}">
+</apex:page>

@@ -1,0 +1,639 @@
+<template>
+    <template if:true={showLoading}>
+        <lightning-spinner class="slds-is-fixed" alternative-text="Loading..." variant="brand"></lightning-spinner>
+    </template>
+    <template if:false={showLoading}>
+        <article class="slds-card setupConfig">
+            <div class="slds-card__header slds-grid">
+                <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                    <lightning-icon icon-name="utility:bundle_config" alternative-text="Event" variant="success" >
+                    </lightning-icon>
+                    <div class="slds-media__body">
+                        <h2 class="slds-card__header-title slds-m-left_small">
+                            <a class="slds-card__header-link slds-truncate" title="Quickbook Salesforce Setup">
+                                <span>Quickbook Salesforce Setup</span>
+                            </a>
+                        </h2>
+                    </div>
+                </header>
+            </div>
+            <div>
+                <section class="slds-card">
+                    <header class="slds-theme_shade slds-p-around_medium slds-m-bottom_small">
+                        <div class="slds-clearfix">
+                            <div class="slds-float_left">
+                                <p><b>Complete all the steps below to finish setting up Quickbook Salesforce Connection</b></p>
+                            </div>
+                            <div class="slds-float_right">
+                                <p><b>{progressValue}% Completed</b></p>
+                            </div>
+                        </div>
+                        <div class="slds-progress-bar slds-progress-bar_circular" aria-valuemin="0" aria-valuemax="100" aria-valuenow={progressValue} role="progressbar">
+                            <span class="slds-progress-bar__value slds-progress-bar__value_success" style={progressStyle}>
+                                <span class="slds-assistive-text">{progressValue}</span>
+                            </span>
+                        </div>
+                    </header>
+                    <ol class="slds-setup-assistant">
+                        <!-- Connect Quickbook with Salesforce Start-->
+                        <li class="slds-setup-assistant__item">
+                            <article class="slds-setup-assistant__step">
+                                <div class="slds-summary-detail slds-is-open">
+                                    <div class="slds-m-right_x-small slds-m-top_x-small">
+                                        <lightning-button-icon icon-name={xciconName}  
+                                                               variant="bare" 
+                                                               alternative-text="toggle" 
+                                                               title="toggleDetails" 
+                                                               data-id="qbConnection" 
+                                                               onclick={changeView} 
+                                                               disabled={firstStep}></lightning-button-icon>
+                                    </div>
+                                    <div class="slds-container_fluid">
+                                        <div class="slds-summary-detail__title">
+                                            <div class="slds-setup-assistant__step-summary">
+                                                <div class="slds-media">
+                                                    <div class="slds-media__figure">
+                                                        <div class="slds-progress-ring slds-progress-ring_large" style={progressRingStyleStep1}>
+                                                            <div class="slds-progress-ring__progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="88">  
+                                                            </div>
+                                                            <div class="slds-progress-ring__content">1</div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="slds-media__body slds-m-top_x-small">
+                                                        <div class="slds-media">
+                                                            <div class="slds-setup-assistant__step-summary-content slds-media__body">
+                                                                <h3 class="slds-setup-assistant__step-summary-title slds-text-heading_small">
+                                                                    <button class="slds-button slds-button_reset" 
+                                                                            aria-controls="step-1-summary-action" data-id="qbConnection"
+                                                                            aria-expanded="true" onclick={changeView}>Connect Quickbook with Salesforce</button>
+                                                                </h3>
+                                                                <p>Connect Salesforce with Quickbook to create Invoices in Quickbook by providing necessary details.</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <template if:true={showQBConnection}>
+                                            <div aria-hidden="false" class="slds-summary-detail__content">
+                                                <div class="slds-setup-assistant__step-detail">
+                                                    <template if:false={isAuthenticated}>
+                                                        <div class="row">
+                                                            <div class="">
+                                                                <p class="stepTitle"><b>Quickbook Account Connection</b></p>
+                                                                <p>To connect your Salesforce Org account and Quickbook account, please input the Quickbook Client ID and Secret below. Please click the "Show Instructions" button below to view the directions for getting this.</p>
+                                                                <br/>
+                                                                <div style="width: 95%;">
+                                                                    <lightning-input name="Client ID" 
+                                                                                    pattern="^\S+$" 
+                                                                                    message-when-pattern-mismatch="No spaces allowed"
+                                                                                    type="text" 
+                                                                                    label="Enter Client ID" 
+                                                                                    value={consumerKey} 
+                                                                                    onchange={updateValue} 
+                                                                                    disabled={disableInput} 
+                                                                                    required></lightning-input>
+                                                                </div>
+                                                                <br/>
+                                                                <div style="width: 95%;">
+                                                                    <lightning-input name="Client Secret" 
+                                                                                    pattern="^\S+$" 
+                                                                                    message-when-pattern-mismatch="No spaces allowed"
+                                                                                    type="text" 
+                                                                                    label="Enter Client Secret" 
+                                                                                    value={consumerSecret} 
+                                                                                    onchange={updateValue} 
+                                                                                    disabled={disableInput} 
+                                                                                    required></lightning-input>
+                                                                </div>
+                                                                <br/>
+                                                                <div style="width: 95%;">
+                                                                    <lightning-combobox name="Environment"
+                                                                                        label="Environment Type"
+                                                                                        placeholder="-- Please select the type of Environment --"
+                                                                                        value={environmentValue}
+                                                                                        options={environmentOptions}
+                                                                                        onchange={updateValue}
+                                                                                        disabled={disableInput} 
+                                                                                        required></lightning-combobox>
+                                                                </div>
+                                                                <br/>
+                                                                <div class="icon">
+                                                                    <div style="width: 95%;">
+                                                                        <lightning-input data-id="redirectLink" 
+                                                                                            type="url" 
+                                                                                            label={redirectUrlLabel}
+                                                                                            placeholder={redirectUrl}
+                                                                                            onchange={updateValue}
+                                                                                            disabled={disableRedirectUrlInput} 
+                                                                                            required></lightning-input>
+                                                                    </div>
+                                                                </div>
+                                                                <br/>
+                                                                <div class="slds-align_absolute-center">
+                                                                    <lightning-button variant="brand" 
+                                                                                    label="Show Instructions" 
+                                                                                    title="Show Instructions" 
+                                                                                    class="slds-m-right_x-small" 
+                                                                                    onclick={showInstruction} 
+                                                                                    icon-name="utility:preview"></lightning-button>
+                                                                    
+                                                                    <lightning-button variant="brand"
+                                                                                      label="Save &amp; Connect" 
+                                                                                      title="Save and Connect" 
+                                                                                      class="slds-m-left_x-small" 
+                                                                                      disabled={disableSave} 
+                                                                                      onclick={saveConnect}></lightning-button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </template>
+                                                    <template if:true={isAuthenticated}>
+                                                        <br/>
+                                                        <div class="slds-grid slds-gutters">
+                                                            <div class="slds-col" style="width: 2%;">
+                                                                <lightning-icon icon-name="action:approval" 
+                                                                                alternative-text="Approved" 
+                                                                                title="Approved" 
+                                                                                size="xx-small"></lightning-icon>
+                                                            </div>
+                                                            <div class="slds-col" style="width: 97%;">
+                                                                <span style="font-size: large; font-weight: 600;">&nbsp;Connection steps already completed.</span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="slds-grid slds-gutters">
+                                                            <div class="slds-col" style="width: 2%;"></div>
+                                                            <div class="slds-col" style="width: 97%;">
+                                                                <span>Quickbook Configuration Details are added in Salesforce. If you want to reset your connection, please click <lightning-button variant="base" label="here" title="here" onclick={handleConnectionLink}></lightning-button> to go the "Connections" Menu.</span>
+                                                            </div>
+                                                        </div>
+                                                        <br/>
+                                                        <div style="width: 95%;">
+                                                            <lightning-input name="Client ID" 
+                                                                                type="text" 
+                                                                                label="Enter Client ID" 
+                                                                                value={consumerKey} 
+                                                                                onkeyup={updateValue} 
+                                                                                disabled={disableInput} 
+                                                                                required></lightning-input>
+                                                        </div>
+                                                        <br/>
+                                                        <div style="width: 95%;">
+                                                            <lightning-input name="Client Secret" 
+                                                                                type="text" 
+                                                                                label="Enter Client Secret" 
+                                                                                value={consumerSecret} 
+                                                                                onchange={updateValue} 
+                                                                                disabled={disableInput} 
+                                                                                required></lightning-input>
+                                                        </div>
+                                                        <br/>
+                                                        <div style="width: 95%;">
+                                                            <lightning-combobox name="Environment"
+                                                                                label="Environment Type"
+                                                                                placeholder="-- Please select the type of Environment --"
+                                                                                value={environmentValue}
+                                                                                options={environmentOptions}
+                                                                                onchange={updateValue}
+                                                                                disabled={disableInput} 
+                                                                                required></lightning-combobox>
+                                                        </div>
+                                                        <br/>
+                                                        <div class="icon">
+                                                            <div style="width: 95%;">
+                                                                <lightning-input data-id="redirectLink" 
+                                                                                    type="url" 
+                                                                                    label={redirectUrlLabel}
+                                                                                    placeholder={redirectUrl}
+                                                                                    onchange={updateValue}
+                                                                                    disabled={disableRedirectUrlInput} 
+                                                                                    required></lightning-input>
+                                                            </div>
+                                                            
+                                                        </div>
+                                                    </template>
+                                                </div>
+                                            </div>
+                                        </template>
+                                    </div>
+                                </div>
+                            </article>
+                        </li>
+                        <!-- Connect Quickbook with Salesforce End -->
+                        <!-- Sync Quickbook with Salesforce Start -->
+                        <li class="slds-setup-assistant__item">
+                            <article class="slds-setup-assistant__step">
+                                <div class="slds-summary-detail slds-is-open">
+                                    <div class="slds-m-right_x-small slds-m-top_x-small">
+                                        <lightning-button-icon icon-name={xciconName} 
+                                                               variant="bare" 
+                                                               alternative-text="toggle" 
+                                                               title="toggleDetails" 
+                                                               data-id="webhookBtn" 
+                                                               onclick={changeView} 
+                                                               disabled={secondStep}></lightning-button-icon>
+                                    </div>
+                                    <div class="slds-container_fluid">
+                                        <div class="slds-summary-detail__title">
+                                            <div class="slds-setup-assistant__step-summary">
+                                                <div class="slds-media">
+                                                    <div class="slds-media__figure">
+                                                        <div class="slds-progress-ring slds-progress-ring_large" style={progressRingStyleStep2}>
+                                                            <div class="slds-progress-ring__progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="88">  
+                                                            </div>
+                                                            <div class="slds-progress-ring__content">2</div>
+                                                        </div>
+                                                        <!-- <c-circular-progress-indicator percent={progressWebhook} 
+                                                                                       content="2"></c-circular-progress-indicator> -->
+                                                    </div>
+                                                    <div class="slds-media__body slds-m-top_x-small">
+                                                        <div class="slds-media">
+                                                            <div class="slds-setup-assistant__step-summary-content slds-media__body">
+                                                                <h3 class="slds-setup-assistant__step-summary-title slds-text-heading_small">
+                                                                    <button class="slds-button slds-button_reset" 
+                                                                            aria-controls="step-1-summary-action"
+                                                                            aria-expanded="true">Sync Quickbook with Salesforce</button>
+                                                                </h3>
+                                                                <p>Steps for Resetting QuickBooks Webhook Connection with Salesforce:</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    <template if:true={showQBWebhook}>
+                                        <div aria-hidden="false" class="slds-summary-detail__content">
+                                            <div class="slds-setup-assistant__step-detail syncSection">
+                                                <template if:false={disableWebhookInput}>
+                                                     <ol class="slds-list_ordered slds-setup-assistant__step-detail" style="margin-bottom: 20px;margin-left: 0;padding-left: 15px;">
+                                                        <li>Navigate to the QuickBooks App Manager at 'https://developer.intuit.com/dashboard'.</li>
+                                                        <li>Select and click on the App you want to configure or integrate with your Salesforce org.</li>
+                                                        <li>Click on the Webhooks tab on the left-hand side. Notice there are two tabs, one for Development(Sandbox) and another for Production.</li>
+                                                        <li>Choose the relevant Webhooks tab based on your integration needs.</li>
+                                                    </ol>
+                                                    <p class="slds-text-title_bold">Setting Up EndPoints</p>
+                                                    <ol class="slds-list_ordered slds-setup-assistant__step-detail">
+                                                            <li>Go to sites setup by clicking on<lightning-button variant="brand" 
+                                                                                                                icon-name="utility:forward_up" 
+                                                                                                                label="Open Sites" 
+                                                                                                                title="Open Sites" 
+                                                                                                                class="slds-m-left_x-small" 
+                                                                                                                onclick={openSites}></lightning-button>
+                                                            </li>
+                                                            <li>Click on a 'New' button of Sites Section.</li>
+                                                            <li>Fill in required values like Site Label, Site Name, and check other fields. Click on Save.</li>
+                                                            <li>On 'Quickbook Integration App' click on the refresh button beside the picklist/dropdown to update the site list and select a Site to generate the URL for your Webhook.</li>
+                                                            <table>
+                                                                <tbody>
+                                                                    <tr>
+                                                                        <td>
+                                                                            <lightning-combobox name="Sites" 
+                                                                                                label="Sites" 
+                                                                                                value={siteVal}
+                                                                                                placeholder="Select Site" 
+                                                                                                variant="label-hidden" 
+                                                                                                options={siteOptions} 
+                                                                                                onchange={fetchSecureURL} 
+                                                                                                disabled={disableWebhookInput}></lightning-combobox>
+                                                                        </td>
+                                                                        <td style="padding: 7px;">
+                                                                            <lightning-button-icon name="Sites" 
+                                                                                                icon-name="utility:refresh"  
+                                                                                                variant="brand" 
+                                                                                                alternative-text="Refresh Sites" 
+                                                                                                onclick={getAllSites}></lightning-button-icon>
+                                                                        </td>
+                                                                    </tr>
+                                                                </tbody>
+                                                            </table>
+                                                            <li>
+                                                                <div style="width: 95%;">
+                                                                    <lightning-input type="text" 
+                                                                                    label="Site Secure URL for Quickbook" 
+                                                                                    value={siteSecureURL} 
+                                                                                    disabled></lightning-input>
+                                                                </div>
+                                                            </li>
+                                                            <li>Copy the above URL and paste it into the Endpoint URL in the Webhooks settings.</li>
+                                                            <li>After pasting the Endpoint URL, the 'Verifier Token' will be generated in the QuickBooks App Manager. Copy the Verifier Token and paste it into the text box below.</li>
+                                                            <li>
+                                                                <div style="width: 95%;">
+                                                                    <lightning-input type="text" 
+                                                                                    label="Verifier Token" 
+                                                                                    value={verifierToken} 
+                                                                                    onchange={onchangeVerifierToken} 
+                                                                                    ></lightning-input>
+                                                                </div>
+                                                            </li>
+                                                            <li>Click on Save.</li>
+                                                            <br/>
+                                                            <template if:true={disableWebhookSave}>
+                                                                <li>Go back to Quickbook App Manager and then to Webhook Setting.</li>
+                                                                <li>Under Status Section Click on "Send 'Intent to receive'" button.</li>
+                                                                <li>After few minutes Status will be changed to OK.</li>
+                                                                <li>Now you can go to Salesforce and Complete Further Steps.</li>
+                                                            </template>
+                                                    </ol>
+                                                    <p class="slds-text-title_bold">Setting Up Event Trigger</p>
+                                                    <ol class="slds-list_ordered slds-setup-assistant__step-detail">
+                                                        <li>Below the 'Endpoints' Section, there is an 'Event triggers' Section.</li>
+                                                        <li>Click on 'Show Webhooks'.</li>
+                                                        <li>You will see <b>ENTITY and ACTION</b>. You can choose the Actions for respective entity</li>    
+                                                    </ol>
+                                                    <br/>
+                                                    <div class="slds-align_absolute-center">
+                                                        <lightning-button variant="brand" 
+                                                                          label="Save" 
+                                                                          title="Save" 
+                                                                          class="slds-m-right_x-small" 
+                                                                          onclick={webhookStepSave} 
+                                                                          disabled={disableSyncSave}></lightning-button>
+                                                    </div>
+                                                </template>
+                                                <template if:true={disableWebhookInput}>
+                                                    <br/>
+                                                    <div class="slds-grid slds-gutters">
+                                                        <div class="slds-col" style="width: 2%;">
+                                                            <lightning-icon icon-name="action:approval" 
+                                                                            alternative-text="Approved" 
+                                                                            title="Approved" 
+                                                                            size="xx-small"></lightning-icon>
+                                                        </div>
+                                                        <div class="slds-col" style="width: 97%;">
+                                                            <span style="font-size: large; font-weight: 600;">&nbsp;Steps for sync between Quickbook and Salesforce are already completed.</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="slds-grid slds-gutters">
+                                                        <div class="slds-col" style="width: 2%;"></div>
+                                                        <div class="slds-col" style="width: 97%;">
+                                                            <span>Quickbook is already in sync with Salesforce with below Sync Key. If you want to reset sync please go to the "Troubleshooting" tab and check "Connections" tab in it.</span>
+                                                        </div>
+                                                    </div>
+                                                    <br/>
+                                                    <lightning-input type="text" 
+                                                                     name ="Webhook Key" 
+                                                                     label="Webhook Key" 
+                                                                     value={setupConfig.webhookKey} 
+                                                                     disabled={disableWebhookInput} 
+                                                                     onchange={updateValue}></lightning-input>
+                                                </template>
+                                            </div>
+                                        </div>
+                                    </template>
+                                                                        </div>
+                                </div>
+                            </article>
+                        </li>
+                        <!-- Sync Quickbook with Salesforce End -->
+                        <!-- Assign Permission Sets Start -->
+                        <li class="slds-setup-assistant__item">
+                            <article class="slds-setup-assistant__step">
+                                <div class="slds-summary-detail slds-is-open">
+                                    <div class="slds-m-right_x-small slds-m-top_x-small">
+                                        <lightning-button-icon icon-name={xciconName}  
+                                                               variant="bare" 
+                                                               alternative-text="toggle" 
+                                                               title="toggleDetails" 
+                                                               data-id="permissionBtn"
+                                                               onclick={changeView} 
+                                                               disabled={thirdStep}></lightning-button-icon>
+                                    </div>
+                                    <div class="slds-container_fluid">
+                                        <div class="slds-summary-detail__title">
+                                            <div class="slds-setup-assistant__step-summary">
+                                                <div class="slds-media">
+                                                    <div class="slds-media__figure">
+                                                        <div class="slds-progress-ring slds-progress-ring_large" style={progressRingStyleStep3}>
+                                                            <div class="slds-progress-ring__progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="88">  
+                                                            </div>
+                                                            <div class="slds-progress-ring__content">3</div>
+                                                        </div>
+                                                        <!-- <c-circular-progress-indicator percent={progressPermission} 
+                                                                                       content="3"></c-circular-progress-indicator> -->
+                                                    </div>
+                                                    <div class="slds-media__body slds-m-top_x-small">
+                                                        <div class="slds-media">
+                                                            <div class="slds-setup-assistant__step-summary-content slds-media__body">
+                                                                <h3 class="slds-setup-assistant__step-summary-title slds-text-heading_small">
+                                                                    <button class="slds-button slds-button_reset" 
+                                                                            aria-controls="step-1-summary-action"
+                                                                            aria-expanded="true">Assign Permission Sets</button>
+                                                                </h3>
+                                                                <p>Assign Permission Sets to the users based on their permissions and restrictions.</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <template if:true={showQBPermission}>
+                                            <div aria-hidden="false" class="slds-summary-detail__content">
+                                                <div class="slds-setup-assistant__step-detail">
+                                                    <lightning-tabset variant="vertical">
+                                                        <lightning-tab label="Quickbook Integration Admin Permission Set" value="Quickbook_Integration_Admin">
+                                                            <div class="slds-align_absolute-center">
+                                                                <b>Quickbook Integration Admin Permission Set</b>
+                                                            </div>
+                                                            <p>User with this permission set can perform all functions, including connecting to and disconnecting from Quickbook entities, and setting the configuration of Quickbook Integration.</p>
+                                                            <br/>
+                                                            <div class="slds-align_absolute-center">
+                                                                <template if:false={disablePS}>
+                                                                    <lightning-button variant="brand" 
+                                                                                        label="Assign this Permission Set to a Users" 
+                                                                                        title="Assign this Permission Set to a User" 
+                                                                                        onclick={handlePermission} 
+                                                                                        class="slds-m-left_x-small" 
+                                                                                        value="Quickbook_Integration_Admin"></lightning-button>
+                                                                </template>
+                                                                <template if:true={disablePS}>
+                                                                    <span>
+                                                                        <lightning-icon icon-name="utility:info_alt" 
+                                                                                        alternative-text="info" 
+                                                                                        size="x-small" title="Quickbook Integration Admin Permission Set"></lightning-icon>&nbsp;
+                                                                        If you want to manage permission set assignment for this permissionset, please click&nbsp;
+                                                                        <lightning-button variant="base" 
+                                                                                          label=" here" 
+                                                                                          title="here" 
+                                                                                          onclick={handlePermissionLink}></lightning-button>
+                                                                    </span>
+                                                                </template>
+                                                            </div>
+                                                        </lightning-tab>
+                                                        <lightning-tab label="Quickbook Integration Operational Permission Set" value="Quickbook_Integration_Operational">
+                                                            <div class="slds-align_absolute-center">
+                                                                <b>Quickbook Integration Operational Permission Set</b>
+                                                            </div>
+                                                            <p>User with this permission can see all data (just like Read Only) and also allows the creation of Invoices and Xero Contacts, and the editing of Quickbook Contacts, and can also run Batch Invoices, Match Quickbook Contacts to Salesforce Accounts, Import Inventory Items as Salesforce Products. Users can also change which Salesforce Account a Quickbook Contact is associated with, or change whether that Quickbook Contact syncs Invoices or not.</p>
+                                                            <br/>
+                                                            <div class="slds-align_absolute-center">
+                                                                <template if:false={disablePS}>
+                                                                    <lightning-button variant="brand" 
+                                                                                        label="Assign this Permission Set to a Users" 
+                                                                                        title="Assign this Permission Set to a User" 
+                                                                                        onclick={handlePermission} 
+                                                                                        class="slds-m-left_x-small" 
+                                                                                        value="Quickbook_Integration_Operational"></lightning-button>
+                                                                </template>
+                                                                <template if:true={disablePS}>
+                                                                    <span>
+                                                                        <lightning-icon icon-name="utility:info_alt" 
+                                                                                        alternative-text="info" 
+                                                                                        size="x-small" title="Quickbook Integration Operational Permission Set"></lightning-icon>&nbsp;
+                                                                        If you want to manage permission set assignment for this permissionset, please click&nbsp;
+                                                                        <lightning-button variant="base" 
+                                                                                          label=" here" 
+                                                                                          title="here" 
+                                                                                          onclick={handlePermissionLink}></lightning-button>
+                                                                    </span>
+                                                                </template>
+                                                            </div>
+                                                        </lightning-tab>
+                                                        <lightning-tab label="Quickbook Integration Read Only Permission Set" value="Quickbook_Integration_User_Read_Only">
+                                                            <div class="slds-align_absolute-center">
+                                                                <b>Quickbook Integration Read Only Permission Set</b>
+                                                            </div>
+                                                            <p>Users with this Permission Set can only view Quickbook data like Invoices &amp; Quickbook Contacts from the various tabs. This will also allow a user to run reports on Quickbook data.</p>
+                                                            <br/>
+                                                            <div class="slds-align_absolute-center">
+                                                                <template if:false={disablePS}>
+                                                                    <lightning-button variant="brand" 
+                                                                                        label="Assign this Permission Set to a Users" 
+                                                                                        title="Assign this Permission Set to a User" 
+                                                                                        onclick={handlePermission} 
+                                                                                        class="slds-m-left_x-small" 
+                                                                                        value="Quickbook_Integration_User_Read_Only"></lightning-button>
+                                                                </template>
+                                                                <template if:true={disablePS}>
+                                                                    <span>
+                                                                        <lightning-icon icon-name="utility:info_alt" 
+                                                                                        alternative-text="info" 
+                                                                                        size="x-small" title="Quickbook Integration Read Only Permission Set"></lightning-icon>&nbsp;
+                                                                        If you want to manage permission set assignment for this permissionset, please click&nbsp;
+                                                                        <lightning-button variant="base" 
+                                                                                          label=" here" 
+                                                                                          title="here" 
+                                                                                          onclick={handlePermissionLink}></lightning-button>
+                                                                    </span>
+                                                                </template>
+                                                            </div>
+                                                        </lightning-tab>
+                                                    </lightning-tabset> 
+                                                    <br/>
+                                                    <template if:false={disablePS}>
+                                                        <div class="slds-align_absolute-center">
+                                                            <lightning-button variant="brand" 
+                                                                              label="Completed" 
+                                                                              title="Completed" 
+                                                                              class="slds-m-right_x-small"
+                                                                              disabled={disablePS}
+                                                                              onclick={handleSavePermission}></lightning-button>
+                                                        </div>
+                                                    </template>
+                                                </div>
+                                            </div>
+                                        </template>
+                                    </div>
+                                </div>
+                            </article>
+                        </li>
+                        <!-- Assign Permission Sets End -->
+                        <!-- Opportunity page layout setup Start -->
+                        <li class="slds-setup-assistant__item">
+                            <article class="slds-setup-assistant__step">
+                                <div class="slds-summary-detail slds-is-open">
+                                    <div class="slds-m-right_x-small slds-m-top_x-small">
+                                        <lightning-button-icon icon-name={xciconName}  
+                                                               variant="bare" 
+                                                               alternative-text="toggle" 
+                                                               title="toggleDetails" 
+                                                               data-id="opportunityBtn" 
+                                                               onclick={changeView} 
+                                                               disabled={fourthStep}></lightning-button-icon>
+                                    </div>
+                                    <div class="slds-container_fluid">
+                                        <div class="slds-summary-detail__title">
+                                            <div class="slds-setup-assistant__step-summary">
+                                                <div class="slds-media">
+                                                    <div class="slds-media__figure">
+                                                        <div class="slds-progress-ring slds-progress-ring_large" style={progressRingStyleStep4}>
+                                                            <div class="slds-progress-ring__progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="88">  
+                                                            </div>
+                                                            <div class="slds-progress-ring__content">4</div>
+                                                        </div>
+                                                        <!-- <c-circular-progress-indicator percent={progressLayout} 
+                                                                                       content="4"></c-circular-progress-indicator> -->
+                                                    </div>
+                                                    <div class="slds-media__body slds-m-top_x-small">
+                                                        <div class="slds-media">
+                                                            <div class="slds-setup-assistant__step-summary-content slds-media__body">
+                                                                <h3 class="slds-setup-assistant__step-summary-title slds-text-heading_small">
+                                                                    <button class="slds-button slds-button_reset" 
+                                                                            aria-controls="step-1-summary-action"
+                                                                            aria-expanded="true">Account or Opportunity Page-Layout Setup</button>
+                                                                </h3>
+                                                                <p>Add Invoice Object to the Account or Opportunity Page layout for the better lookout while creating and managing Invoices.</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <template if:true={showOpportunity}>
+                                            <div aria-hidden="false" class="slds-summary-detail__content">
+                                                <div class="slds-setup-assistant__step-detail">
+                                                    <ol class="slds-list_ordered">
+                                                        <li>Go to Setup on top right corner.</li>
+                                                        <li>Click on Object Manager and serach for Opportunity or Account.</li>
+                                                        <li>Select Page Layouts from the left side menubar.</li>
+                                                        <li>Open Opportunity or Account Page Layout.</li>
+                                                        <li>On the Opportunity or Account Page Layout, Select "Related Lists" option from the right side menu.</li>
+                                                        <li>Search for appropriate Invoice Object. Drag and drop the identified Invoice Object into the Related Lists section.</li>
+                                                        <li>Now to add 'Generate Invoice' button on record page, Select "Mobile & Lightning Actions" from the left side menu.</li>
+                                                        <li>Drag "Generate Invoice" button and drop to the "Salesforce Mobile and Lightning Experience Actions" section.</li>
+                                                        <li>Save Page Layout.</li>
+                                                    </ol>
+                                                    <br/>
+                                                    <div class="slds-align_absolute-center">
+                                                        <lightning-button variant="brand" 
+                                                                          label="Completed" 
+                                                                          title="Completed" 
+                                                                          class="slds-m-right_x-small" 
+                                                                          onclick={layoutUpdated}
+                                                                          disabled={disableLayoutSave}></lightning-button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </template>
+                                    </div>
+                                </div>
+                            </article>
+                        </li>
+                        <!-- Opportunity page layout setup End -->
+                    </ol>
+                </section>
+            </div>
+            <div>
+                <c-modal-pop-up show-modal={showModal} 
+                                show-positive={showPositiveButton}
+                                show-negative={showNegativeButton}
+                                positive-button-label={positiveButtonLabel}
+                                onpositive={closeModal}
+                                onclose={closeModal}>
+                    <div slot="header">
+                        <h2 slot="header" id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Instructions to get Client ID and Secret</h2>
+                    </div>
+                    <div slot="body">
+                        <ol class="slds-list_ordered">
+                            <li>Navigate to 'https://developer.intuit.com/dashboard'.</li>
+                            <li>Click the Plus(+) icon/button to Create an App.</li>
+                            <li>In "Create a new app" page Select an App Type</li>
+                            <li>In Basic Info - Give your Application a Name and in Permissions - Add permissions and click the Confirm button.</li>
+                            <li>In Development Setting, on the left-hand side their is a 'Keys & credentials' tab that will get Client ID and Client Secret.</li>
+                            <li>{redirectUrlLabel}</li>
+                        </ol>                            
+                    </div>
+                </c-modal-pop-up>
+            </div>
+        </article>
+    </template>
+</template>

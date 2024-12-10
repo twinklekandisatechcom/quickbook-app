@@ -1,0 +1,29 @@
+lightning-modal-header{
+    --slds-c-modal-header-color-background: #0b860b;
+    --slds-c-modal-header-text-color : #ffffff;
+    --slds-c-modal-heading-font-weight : bold;
+    --slds-c-modal-heading-font-size : 18px;
+}   
+
+/* lightning-modal-footer{
+    --slds-c-modal-footer-color-background : #0b860b;
+} */
+
+lightning-button{
+    --slds-c-button-brand-color-background : #0b860b;
+    --slds-c-button-brand-text-color : #ffffff;
+    --slds-c-button-brand-color-background-hover : #1fa51f;
+    --slds-c-button-brand-color-background-active : #1fa51f;
+}
+
+/* .divTxtCls{
+    padding: 48px;
+    font-weight: 400;
+} */
+
+
+.MessageTxtCls{
+    /* text-align: center; */
+    font-size: 28px;
+    font-weight: 400;
+}

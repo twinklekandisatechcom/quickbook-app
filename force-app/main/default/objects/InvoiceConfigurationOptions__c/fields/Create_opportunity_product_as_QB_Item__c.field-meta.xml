@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Create_opportunity_product_as_QB_Item__c</fullName>
+    <defaultValue>false</defaultValue>
+    <label>Create opportunity product as QB Item</label>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

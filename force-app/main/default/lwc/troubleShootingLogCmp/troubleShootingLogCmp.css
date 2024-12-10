@@ -1,0 +1,17 @@
+.Note{
+    background: blanchedalmond;
+    border-radius: 5px;
+}
+
+.column {
+  padding: 10px;
+  font-size: medium;
+}
+.row{
+  display: flex;
+}
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
+}

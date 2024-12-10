@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Data_Record__c</fullName>
+    <externalId>false</externalId>
+    <formula>IF(
+  NOT(ISBLANK(Record_Id__c)),
+  CASE(
+    LEFT(Record_Id__c, 3),
+    &apos;001&apos;, HYPERLINK (LEFT($Api.Partner_Server_URL_260, FIND( &apos;/services&apos;, $Api.Partner_Server_URL_260))
+      + &quot;/lightning/r/Account/&quot; + Record_Id__c + &quot;/view&quot;, &quot;Account&quot;),
+    &apos;003&apos;, HYPERLINK (LEFT($Api.Partner_Server_URL_260, FIND( &apos;/services&apos;, $Api.Partner_Server_URL_260))
+      + &quot;/lightning/r/Account/&quot; + Record_Id__c + &quot;/view&quot;, &quot;Contact&quot;),
+    &apos;006&apos;, HYPERLINK (LEFT($Api.Partner_Server_URL_260, FIND( &apos;/services&apos;, $Api.Partner_Server_URL_260))
+      + &quot;/lightning/r/Account/&quot; + Record_Id__c + &quot;/view&quot;, &quot;Opportunity&quot;),
+    &apos;a03&apos;, HYPERLINK (LEFT($Api.Partner_Server_URL_260, FIND( &apos;/services&apos;, $Api.Partner_Server_URL_260))
+      + &quot;/lightning/r/QB_Invoice__c/&quot; + Record_Id__c + &quot;/view&quot;, &quot;QB Invoice&quot;),
+    &apos;a00&apos;, HYPERLINK (LEFT($Api.Partner_Server_URL_260, FIND( &apos;/services&apos;, $Api.Partner_Server_URL_260))
+      + &quot;/lightning/r/Quickbook_Info__c/&quot; + Record_Id__c + &quot;/view&quot;, &quot;QB Info&quot;),
+    &apos;01t&apos;, HYPERLINK (LEFT($Api.Partner_Server_URL_260, FIND( &apos;/services&apos;, $Api.Partner_Server_URL_260))
+      + &quot;/lightning/r/Product2/&quot; + Record_Id__c + &quot;/view&quot;, &quot;Product&quot;),
+    &apos;a04&apos;, HYPERLINK (LEFT($Api.Partner_Server_URL_260, FIND( &apos;/services&apos;, $Api.Partner_Server_URL_260))
+      + &quot;/lightning/r/QB_Invoice_Line_Item__c/&quot; + Record_Id__c + &quot;/view&quot;, &quot;QB Invoice Line Item&quot;),
+    &apos;a08&apos;, HYPERLINK (LEFT($Api.Partner_Server_URL_260, FIND( &apos;/services&apos;, $Api.Partner_Server_URL_260))
+      + &quot;/lightning/r/Qb_Invoice_Payment_Item__c/&quot; + Record_Id__c + &quot;/view&quot;, &quot;QB Invoice Payment&quot;),
+    &apos;a05&apos;, HYPERLINK (LEFT($Api.Partner_Server_URL_260, FIND( &apos;/services&apos;, $Api.Partner_Server_URL_260))
+      + &quot;/lightning/r/QB_MetaData__c/&quot; + Record_Id__c + &quot;/view&quot;, &quot;QB MetaData&quot;),
+    HYPERLINK(&apos;/&apos; &amp; Id, &apos;Other Object&apos;)
+  ),
+  &apos;&apos;
+)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Record Link</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

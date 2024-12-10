@@ -1,0 +1,26 @@
+<template>
+    <div class="container">
+        <p>
+            <lightning-button-icon  size="small" 
+                                    class="slds-p-around_small" 
+                                    variant="bare" 
+                                    disabled={disableleftarrow} 
+                                    onclick={handlePrevious} 
+                                    icon-name="utility:chevronleft"></lightning-button-icon>
+            <span>
+                <template for:each={pageList} for:item="p" for:index="index">
+                    &nbsp;
+                    <a key={p}>
+                        <div class="slds-align_absolute-center pagenum" data-id={p} data-index ={index} onclick={handleClick}>{p}</div>
+                    </a>
+                </template>
+            </span>
+            <span><lightning-button-icon  size="small" 
+                                          class="slds-p-around_small" 
+                                          variant="bare" 
+                                          onclick={handleNext} 
+                                          disabled={disablerightarrow} 
+                                          icon-name="utility:chevronright"></lightning-button-icon ></span>
+        </p>
+    </div>
+</template>

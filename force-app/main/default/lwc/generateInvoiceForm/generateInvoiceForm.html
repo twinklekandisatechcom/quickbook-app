@@ -1,0 +1,252 @@
+<template> 
+    <p class="cardHeading">Invoice Details</p>
+    <div class="billingSectionDetails">
+       
+       <div if:true={getBillingAddress}>
+          <div>
+             <p>Billing Address: </p>
+             <lightning-formatted-rich-text value={billingAddress}></lightning-formatted-rich-text>
+          </div>
+       </div>
+       <div if:true={getShippingAddress}>
+          <div>
+             <p>Shipping Address: </p>
+             <lightning-formatted-rich-text value={shippingAddress}></lightning-formatted-rich-text>
+          </div>
+       </div>
+       <div if:true={getContactDetails}>
+          <div>
+             <p>Contact Details:</p>
+             <p if:true={getCustomerInvoice.DisplayName}> {getCustomerInvoice.DisplayName}</p>
+             <p if:false={getCustomerInvoice.DisplayName}> {getCustomerInvoice.GivenName} {getCustomerInvoice.MiddleName} {getCustomerInvoice.FamilyName}</p>
+             <p if:true={getCustomerInvoice.Email}> {getCustomerInvoice.Email}</p>
+          </div>
+          
+       </div>
+    </div> 
+    <div class="slds-p-around_medium invoiceForm">
+       <div class="rowSection slds-p-bottom_medium">
+          <div class="slds-p-horizontal--small slds-col slds-size_6-of-12">
+             <label class="slds-form-element__label">Terms</label>
+             <lightning-helptext content="Terms shows how many days a customer has to pay you. You can change this number before you send the Invoice"></lightning-helptext>
+             <lightning-combobox name="terms" label="Terms" value={terms}
+                         placeholder="Select Terms" options={termsOption}
+                         onchange={updateValues} variant = "label-hidden"></lightning-combobox>
+          </div>
+          <div class="slds-p-horizontal--small slds-col slds-size_6-of-12">
+             <lightning-input type="date" name="invoiceDate" label="Invoice Date" value={invoiceDate} datestyle="short" onchange={updateValues} class="validate" required></lightning-input>
+          </div>
+          
+      </div>
+      <div class="rowSection slds-p-bottom_medium">
+          <div class="slds-p-horizontal--small slds-col slds-size_6-of-12">
+          <lightning-input type="date" name="invoiceDueDate" label="Due Date" value={invoiceDueDate} datestyle="short" onchange={updateValues} class="validate" required></lightning-input>
+          </div>
+          <div class="slds-p-horizontal--small slds-col slds-size_6-of-12" if:true={getCustomerInvoice.CurrencyCode}>
+             <label class="slds-form-element__label">Currency Code
+             </label>
+            <input type="text" label="Currency" name="CurrencyCode" value={getCustomerInvoice.CurrencyCode} class="slds-input" disabled></input>
+         </div>
+       </div>
+
+       <div class="rowSection slds-p-bottom_medium" style="
+            width: 100%;
+            scroll-behavior: auto;
+            overflow-y: auto;
+         ">
+          <table class="productTable">
+             <thead>
+               <th if:true={invoiceOppProduct}>PRODUCT CODE</th>
+               <th>DESCRIPTION</th>
+               <!-- <th if:true={invoiceOppProduct}>EXPENSE ACCOUNT</th> -->
+               <th if:true={getConfigForProduct}>INCOME ACCOUNT</th>
+               <th>QTY</th>
+               <th>RATE</th>
+               <th>AMOUNT</th>
+               <th>TAX</th>
+             </thead>
+             <tbody>
+               <template for:each={lineitemsRecords} for:item="li">
+                  <tr key={li.id} class="alignmentTr">
+                     <td if:true={invoiceOppProduct}>
+                        <lightning-input data-id={li.id} value={li.code} name="code" type="text"
+                                              variant="label-hidden" label="code" 
+                                              onchange={updateValues} disabled="true"></lightning-input>
+                     </td>
+                     <td>
+                        <lightning-input data-id={li.id} value={li.productDesc} name="productDesc" type="text"
+                                              variant="label-hidden" label="Description" 
+                                              onchange={updateValues} class="mobileInput"></lightning-input>
+                     </td>
+                     <td if:true={getConfigForProduct}>
+                        <lightning-combobox data-id={li.id}
+                           name="incomeAccount"
+                           value = {li.incomeAccount}
+                           label="" variant = "label-hidden"
+                           options={incomeAccountOption} 
+                           onchange={updateValues} ></lightning-combobox>
+                     </td>
+                     <td>
+                        
+                        <lightning-input if:true={invoiceOppProduct} onchange={updateValues} data-id={li.id} name="quantity" value={li.quantity} class="validate" variant="label-hidden" type="number" label="Quantity" step="any"></lightning-input>
+                        <lightning-input if:false={invoiceOppProduct} onchange={updateValues} data-id={li.id} name="quantity" value={li.quantity} class="validate mobInput" variant="label-hidden" type="number" label="Quantity" step="any"></lightning-input>
+                     </td>
+                     <td> 
+                        <lightning-input if:true={invoiceOppProduct} onchange={updateValues} data-id={li.id} name="rate" value={li.rate} class="validate" variant="label-hidden" type="number" label="Rate" step="any"></lightning-input>
+                        <lightning-input if:false={invoiceOppProduct} onchange={updateValues} data-id={li.id} name="rate" value={li.rate} class="validate mobInput" variant="label-hidden" type="number" label="Rate" step="any"></lightning-input>
+                     </td>
+                     <td>
+                        <lightning-input data-id={li.id} data-amount={li.amount} name="amount" type="number" value={li.amount}  
+                        variant="label-hidden" label="Amount" step="any"
+                        onchange={updateValues}  disabled="true"></lightning-input>
+                     </td>
+                     <td  style="padding-top: 8px;">
+                        <lightning-input data-id={li.id} name="taxable" value={li.taxable} variant="label-hidden" type="checkbox" label="Tax" onchange={updateValues} ></lightning-input>
+                     </td>
+                     <td>
+                        <lightning-button-icon icon-name="utility:delete" size="medium" data-amount={li.amount} data-id={li.id} data-tax={li.taxable}
+                                       alternative-text="Add lineItem" class="slds-m-left_xx-small my-icon" title="Delete lineItem"
+                                       onclick={removeClick}></lightning-button-icon>
+                     </td>
+                  </tr>
+               </template>
+               
+               <tr>
+                  <td>
+                     <lightning-button-icon icon-name="utility:add" size="medium"
+                     alternative-text="Add lineItem" class="slds-m-left_xx-small" title="Add lineItem"
+                     onclick={addlineitemClick}></lightning-button-icon>                  
+                  </td>
+                  <td>           
+                     
+                  </td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+               </tr>
+               <tr>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td class="subtotalSec"><p align="right">Subtotal</p></td>
+                  <td class="subtotalSec"><p align="left" class="slds-p-left_medium"><lightning-formatted-number value={invoiceSubtotal} >
+                                                </lightning-formatted-number></p></td>
+               </tr>
+               <tr>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td class="subtotalSec"><p align="right" style="font-size:12px;">Taxable Subtotal</p></td>
+                  <td class="subtotalSec"><p align="left" style="font-size:12px;" class="slds-p-left_medium"><lightning-formatted-number value={taxableSubtotal} >
+                                                </lightning-formatted-number></p></td>
+               </tr>
+               <tr>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td>
+                     <div class="discountSection">
+                        <div style="width: 25%;"></div>
+                        <lightning-combobox  variant="label-hidden" 
+                        name="discountType"
+                        label="Discount Type"
+                        value={discountTypeValue}
+                        options={discountOptions} class="slds-p-right_small" style="width:50%;"
+                        onchange={updateValues} ></lightning-combobox>
+                        <lightning-input style="width:25%" onchange={updateValues} name="discount" value={discountValue} class="validate" variant="label-hidden" type="number" step="any" label="Discount"></lightning-input>
+                        <!-- <lightning-input style="width:25%" value={discountValue} name="discount" variant="label-hidden" type="number" label="Discount" onchange={updateValues} ></lightning-input> -->
+                     </div>
+                  </td>
+                  <td><p align="left" class="subtotalSec slds-p-left_medium"><lightning-formatted-number value={discountTotal} >
+                  </lightning-formatted-number></p></td>
+                  <td></td>
+                  <td></td>
+               </tr>
+               <tr>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td>
+                     <div  align="right">
+                        <lightning-combobox variant="label-hidden" 
+                           name="taxPercent" placeholder="Select sales tax"
+                           label="Tax Percent"
+                           value={taxId}
+                           options={taxPercentOptions}
+                           onchange={updateValues} style="width:50%;"></lightning-combobox>
+                     </div>
+                  </td>
+                  <td>
+                     <p align="left" class="subtotalSec slds-p-left_medium"><lightning-formatted-number value={totalTaxValue} >
+                     </lightning-formatted-number></p>
+                  </td>
+                  <td></td>
+                  <td></td>
+               </tr>
+               <!--Apply Tax after discount-->
+               <tr>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td class="subtotalSec">
+                    <p align="right" style="font-size:12px;">Apply discount after sales tax</p>
+                  </td>
+                  <td>
+                     <!-- <p align="left" class="subtotalSec slds-p-left_medium"><lightning-formatted-number value={totalTaxValue} >
+                     </lightning-formatted-number></p> -->
+                     <lightning-input if:true={invoiceOppProduct} name="discountAfterTax" checked={discountAfterTax} onchange={updateValues}  class="validate slds-p-left_medium mobInput" variant="label-hidden" type="checkbox" label="discountAfterTax"></lightning-input>
+                     <lightning-input if:false={invoiceOppProduct} name="discountAfterTax" checked={discountAfterTax} onchange={updateValues} class="validate slds-p-left_medium" variant="label-hidden" type="checkbox"  label="discountAfterTax"></lightning-input>
+                  </td>
+                  <td></td>
+                  <td></td>
+               </tr>
+               
+
+               <tr>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td class="subtotalSec">
+                    <p align="right" style="font-size:12px;">Shipping</p>
+                  </td>
+                  <td>
+                     <!-- <p align="left" class="subtotalSec slds-p-left_medium"><lightning-formatted-number value={totalTaxValue} >
+                     </lightning-formatted-number></p> -->
+                     <lightning-input if:true={invoiceOppProduct} name="shipping" value={shipping} onchange={updateValues}  class="validate slds-p-left_medium mobInput" variant="label-hidden" type="number" step="any" label="shipping"></lightning-input>
+                     <lightning-input if:false={invoiceOppProduct} name="shipping" value={shipping} onchange={updateValues} class="validate slds-p-left_medium" variant="label-hidden" type="number" step="any"  label="shipping"></lightning-input>
+                  </td>
+                  <td></td>
+                  <td></td>
+               </tr>
+               <tr>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td class="subtotalSec"><p align="right">Total</p></td>
+                  <td class="subtotalSec"><p align="left" class="slds-p-left_medium"><lightning-formatted-number value={totalBill} 
+                  >
+                  </lightning-formatted-number></p></td>
+               </tr>
+               <tr>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td class="subtotalSec"><p align="right">Balance due</p></td>
+                  <td class="subtotalSec"><p align="left" class="slds-p-left_medium"><lightning-formatted-number value={totalBill} ></lightning-formatted-number></p></td>
+               </tr>
+             </tbody>
+          </table>
+       </div>
+    </div>
+
+    <div class="actionSection" align="center">
+       <footer>
+          <button class="slds-button slds-button_neutral" onclick={clearHandler}>Clear</button>
+          <button class="slds-button slds-button_neutral" onclick={previousHandler}>Previous</button>
+          <button class="slds-button slds-button_neutral" if:true={saveDisable} onclick={createInvoiceHandler} disabled={disSave}>Save</button>
+          <button class="slds-button slds-button_neutral" if:true={saveAndSendDisable} onclick={createNsendInvoiceHandler} disabled={disSaveNsend}>Save & Send</button>
+      </footer>
+    </div>
+ </template>

@@ -1,0 +1,86 @@
+<template>
+    <lightning-card class="lightningCard">
+        <template if:true={isMobile}>
+            <lightning-layout style="height:100%;" >
+                <div class="slds-align_absolute-center" >  
+                    <c-no-data-cmp info="Quickbook Sync Setup feature is not available in Mobile."></c-no-data-cmp>
+                </div>
+            </lightning-layout>
+        </template>
+        
+        <template if:true={isTablet}>
+            <lightning-layout style="height:100%;">
+                <div class="slds-align_absolute-center" >  
+                    <c-no-data-cmp info="Quickbook Sync Setup feature is not available in Tablet."></c-no-data-cmp>
+                </div>
+            </lightning-layout>
+        </template>
+        <template if:true={isDesktop}>
+            <template if:true={showLoading}>
+                <lightning-spinner class="slds-is-fixed" alternative-text="Loading..." variant="brand"></lightning-spinner>
+            </template>
+            <lightning-layout class=" slds-grid slds-gutters">
+                <lightning-layout-item class="leftNavigation slds-p-around_xxx-small">
+                    <lightning-vertical-navigation selected-item="setup_config_cmp" onselect={handleSelect} class="navigation">
+                        <div class="slds-align_absolute-center logo">
+                            <div>
+                                <img src={qbLogo} width="70">
+                            </div>
+                            Integration
+                        </div>
+                        <lightning-vertical-navigation-section label="SETUP">
+                            <lightning-vertical-navigation-item-icon label="Setup And Configuration"
+                                                                    class="slds-m-top_x-small slds-m-bottom_x-small"
+                                                                    name="setup_config_cmp"
+                                                                    icon-name="utility:bundle_config"></lightning-vertical-navigation-item-icon>
+                            <lightning-vertical-navigation-item-icon label="Invoice Configuration"
+                                                                    class="slds-m-top_x-small slds-m-bottom_x-small"
+                                                                    name="invoice_configuration_cmp"
+                                                                    icon-name="utility:setup"></lightning-vertical-navigation-item-icon>
+                            <lightning-vertical-navigation-item-icon label="Currency Configuration"
+                                                                    class="slds-m-top_x-small slds-m-bottom_x-small"
+                                                                    name="currency_configuration_cmp"
+                                                                    icon-name="utility:money"></lightning-vertical-navigation-item-icon>
+                            <lightning-vertical-navigation-item-icon label="Permission Set"
+                                                                    class="slds-m-top_x-small slds-m-bottom_x-small"
+                                                                    name="permission_set_cmp"
+                                                                    icon-name="utility:key"></lightning-vertical-navigation-item-icon>
+                            <lightning-vertical-navigation-item-icon label="Troubleshooting"
+                                                                    class="slds-m-top_x-small slds-m-bottom_x-small"
+                                                                    name="troubleshooting_cmp"
+                                                                    icon-name="utility:touch_action"></lightning-vertical-navigation-item-icon>
+                            <lightning-vertical-navigation-item-icon label="Help And Support"
+                                                                    class="slds-m-top_x-small slds-m-bottom_x-small"
+                                                                    name="help_support_cmp"
+                                                                    icon-name="utility:chat"></lightning-vertical-navigation-item-icon>
+                        </lightning-vertical-navigation-section>
+                    </lightning-vertical-navigation>
+                </lightning-layout-item>
+                <lightning-layout-item padding="around-medium" class="rightNavigation">
+                    <template if:true={setup_config_cmp}>
+                        <c-setup-config-cmp onenabletabs={handleEnabledTabs} onconnectiontab={handleConnectionTab} onpermissiontab={handlePermissionTab}></c-setup-config-cmp>
+                    </template>
+                    <template if:true={invoice_configuration_cmp}>
+                        <c-invoice-configuration-cmp></c-invoice-configuration-cmp>
+                    </template>
+                    <template if:true={currency_configuration_cmp}>
+                        <c-currency-config-cmp></c-currency-config-cmp>
+                    </template>
+                    <template if:true={permission_set_cmp}>
+                        <c-permission-set-cmp></c-permission-set-cmp>
+                    </template> 
+                    <template if:true={troubleshooting_cmp}>
+                        <c-troubleshooting-cmp></c-troubleshooting-cmp>
+                    </template> 
+                    <template if:true={help_support_cmp}>
+                        <c-help-support-cmp></c-help-support-cmp>
+                    </template> 
+                    <template if:true={organization_setail_cmp}>
+                        <c-organization-setail-cmp></c-organization-setail-cmp>
+                    </template>  
+                </lightning-layout-item>
+            </lightning-layout>
+        </template>
+        
+    </lightning-card>
+</template>

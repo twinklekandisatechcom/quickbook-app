@@ -1,0 +1,48 @@
+<template>
+    <div class="showSpinner" if:true={showSpinner}>
+        <lightning-spinner class="slds-is-fixed" alternative-text="Loading" size="medium"></lightning-spinner>
+    </div>
+    <div class="headSection">QuickBook Customer Sync</div>
+    <div class="slds-p-left_large slds-p-right_large slds-p-bottom_large slds-p-top_small" style="width: 100%; scroll-behavior: auto; overflow-y: auto;">
+        <p class="slds-p-bottom_small" style="font-size: 14px;">Please review the data once before proceeding further</p>
+        <table>
+            <tr>
+                <th>Fields</th>
+                <th>QB Data</th>
+                <th>SF Data</th>
+            </tr>
+            <template for:each={customerData} for:item="item" for:index="index">
+                <tr key={item.fields} if:true={item.fields}>
+                    <td>{item.fields}</td>
+                     <td>
+                        <template if:true={item.check}>
+                            <input type="checkbox" checked={item.qbData} disabled/>
+                        </template>
+                        <template if:false={item.check}>
+                            {item.qbData}
+                        </template>
+                    </td>
+                    <td>
+                        <template if:true={item.check}>
+                            <input type="checkbox" checked={item.sfData} disabled/>
+                        </template>
+                        <template if:false={item.check}>
+                            {item.sfData}
+                        </template>
+                    </td>
+                   
+                </tr>
+            </template>
+        </table>
+        <div slot="footer" class="footerDiv slds-m-top--large">
+            <div class="footer slds-m-top--large slds-m-bottom_xx-large" >
+                <lightning-button label="BACK" class="slds-m-around_small" 
+                                  variant="brand"
+                                  onclick={backBtnHandler}></lightning-button>
+                <lightning-button label="SUBMIT" class="slds-m-around_small"                                  
+                                  variant="brand"
+                                  onclick={submitBtnHandler}></lightning-button>
+            </div>
+        </div>
+    </div>
+</template>

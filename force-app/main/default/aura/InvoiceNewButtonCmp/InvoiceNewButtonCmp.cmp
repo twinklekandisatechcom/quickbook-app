@@ -1,0 +1,8 @@
+<aura:component implements="force:appHostable,force:hasRecordId,lightning:isUrlAddressable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,lightning:actionOverride,lightning:hasPageReference,force:lightningQuickAction" access="global">
+    <aura:attribute name="recordId" type="String"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <!-- <div aura:id="newtag">
+        {!v.body}
+    </div> -->
+    <!-- <c:createAndSynInvoices /> -->
+</aura:component>

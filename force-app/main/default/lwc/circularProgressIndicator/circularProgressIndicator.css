@@ -1,0 +1,5 @@
+.circularProgress{
+    --lwc-squareIconUtilityLarge: 5rem;
+    --lwc-progressRingWidth:0.7rem;
+    --lwc-colorBackgroundSuccessDark:gray;
+}

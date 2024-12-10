@@ -1,0 +1,22 @@
+<template>
+    <lightning-card>
+        <lightning-layout>
+            <lightning-layout-item padding="around-medium">
+                <lightning-vertical-navigation selected-item={selectedItem} onselect={handleSelect} class="navigation">
+                    <lightning-vertical-navigation-section label="SETUP">
+                        <lightning-vertical-navigation-item label="Setup And Config" name="setup_config"></lightning-vertical-navigation-item>
+                        <lightning-vertical-navigation-item label="Permission Set" name="permission_Set"></lightning-vertical-navigation-item>
+                        <lightning-vertical-navigation-item label="Troubleshooting" name="troubleshooting"></lightning-vertical-navigation-item>
+                        <lightning-vertical-navigation-item label="Help And Support" name="help_support"></lightning-vertical-navigation-item>
+                        <lightning-vertical-navigation-item label="Invoice Configuration" name="invoice_configuration"></lightning-vertical-navigation-item>
+                        <lightning-vertical-navigation-item label="Contact Configuration" name="contact_configuration"></lightning-vertical-navigation-item>
+                        <lightning-vertical-navigation-item label="Organization Detail" name="organization_detial"></lightning-vertical-navigation-item>
+                    </lightning-vertical-navigation-section>
+                </lightning-vertical-navigation>
+            </lightning-layout-item>
+            <lightning-layout-item padding="around-medium">
+                <p>You Are Viewing: {currentContent} </p>
+            </lightning-layout-item>
+        </lightning-layout>
+    </lightning-card>
+</template>

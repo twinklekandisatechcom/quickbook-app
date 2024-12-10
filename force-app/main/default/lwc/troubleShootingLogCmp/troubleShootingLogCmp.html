@@ -1,0 +1,127 @@
+<template>
+    <template if:true={isLoading}>
+        <div style="margin-top: 30px;">
+            <lightning-spinner class="slds-is-fixed" alternative-text="Loading..." variant="brand" size="medium"></lightning-spinner>
+        </div>
+    </template>
+    <template if:false={isLoading}>
+        <div class="slds-section slds-is-open">
+            <h3 class="slds-section__title slds-theme_shade">
+                <span class="slds-truncate slds-p-horizontal_small" title="Section Title">QuickBook Integration Logs</span>
+            </h3>
+            <div aria-hidden="false" class="slds-section__content">
+                <div style="width: auto;">
+                    <template if:true={tableData}>
+                        <br/>
+                        <h1>
+                            <b>
+                                <lightning-icon icon-name="utility:info_alt" 
+                                                alternative-text="info" 
+                                                size="small"
+                                                title="QuickBook Integration Logs"></lightning-icon>
+                                &nbsp;&nbsp;
+                                Below table shows log data from {minDate}/{minMonth}/{minYear} to {maxDate}/{maxMonth}/{maxYear}
+                            </b>
+                        </h1>
+                        <br/>
+                        <lightning-datatable data={records} 
+                                             columns={columns} 
+                                             key-field="id" 
+                                             sorted-by={sortBy}
+                                             sorted-direction={sortDirection} 
+                                             onsort={doSorting} 
+                                             hide-checkbox-column="true"></lightning-datatable>
+
+                        <template if:true={showPagination}>
+                            <br/>
+                            <div class="slds-align_absolute-center">
+                                <template if:true={totalRecords}>
+                                    <c-pagination-cmp totalrecordscount={totalRecords} 
+                                                      page-size={pageSize}
+                                                      onpagination={handlePagination}></c-pagination-cmp>
+                                </template>
+                            </div>
+                        </template>
+                    </template>
+                    <template if:false={tableData}>
+                        <c-no-data-cmp info="No log data found"></c-no-data-cmp>
+                    </template>
+                </div>
+            </div>
+        </div>
+        <br />
+        <div class="slds-section slds-is-open">
+            <h3 class="slds-section__title slds-theme_shade">
+                <span class="slds-truncate slds-p-horizontal_small" title="Section Title">Schedule log Deleting
+                    Process</span>
+            </h3>
+            <div aria-hidden="false" class="slds-section__content">
+                <template if:true={scheduleData}>
+                    <div class="slds-p-around_small Note">
+                        <h3><b>Already Scheduled Process Info:</b></h3>
+                        <ul class="slds-list_dotted">
+                            <li>Currently Delete log Process is scheduled <b>{logConfig.deleteLog}</b></li>
+                            <template if:true={scheduleData.startTime}>
+                                <li>Process was scheduled on <b>{scheduleData.startTime}</b></li>
+                            </template>
+                            <template if:true={scheduleData.nextRunTime}>
+                                <li>Next Process will run at <b>{scheduleData.nextRunTime}</b></li>
+                            </template>
+                            <template if:true={scheduleData.previousRunTime}>
+                                <li>Previous Process ran at <b>{scheduleData.previousRunTime}</b></li>
+                            </template>
+                        </ul>
+                        <br />
+                        <h3><b>Note:</b></h3>
+                        <ul class="slds-list_dotted">
+                            <li>Please keep in mind that schedule log deleting process will start from the date you are changing the Time Period.</li>
+                            <li>Process will choose automatically next date, if process date is falling on 29th, 30th, 31st and date is not applicable on that month.</li>
+                        </ul>
+                    </div>
+                </template>
+                <br />
+                <div class="row">
+                    <div class="column">Delete Logs</div>
+                    <div class="column">
+                        <lightning-combobox name="Days" 
+                                            label="Days" 
+                                            variant="label-hidden" 
+                                            value={logConfig.deleteLog}
+                                            placeholder="Select Time Period" 
+                                            options={daysOptions} 
+                                            onchange={handledayChange}></lightning-combobox>
+                    </div>
+                    <template if:true={showTime}>
+                        <div class="column">at 12:00 AM</div>
+                    </template>
+                </div>
+            </div>
+            <div class="slds-align_absolute-center">
+                <lightning-button variant="brand" 
+                                  label="Save" 
+                                  title="Save" 
+                                  disabled={savedisable} 
+                                  onclick={handleSave}
+                                  class="slds-m-left_x-small"></lightning-button>
+            </div>
+        </div>
+        <div class="slds-section slds-is-open">
+            <h3 class="slds-section__title slds-theme_shade">
+                <span class="slds-truncate slds-p-horizontal_small" title="Section Title">Delete all Logs</span>
+            </h3>
+            <div aria-hidden="false" class="slds-section__content">
+                <div class="row">
+                    <div class="column">{deleteMessage}</div>
+                    <div class="column">
+                        <lightning-button variant="destructive" 
+                                          label="Delete" 
+                                          title="Delete Logs"
+                                          onclick={handleDeleteLogs} 
+                                          disabled={deleteDisable} 
+                                          class="slds-m-left_x-small"></lightning-button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+</template>

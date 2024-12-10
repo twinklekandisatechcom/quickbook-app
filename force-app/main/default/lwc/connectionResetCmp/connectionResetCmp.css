@@ -1,0 +1,27 @@
+.invoiceConfig .slds-card__header.slds-grid {
+    border-bottom: 3px solid #00A1E0;
+    box-shadow: 3px 0px 3px #00a1e0;
+    padding: 18px;
+}
+.slds-section-title_divider.slds-m-top_medium.slds-m-bottom_medium{
+    font-size: .75rem;
+    line-height: 1.25;
+    color: black;
+    text-transform: uppercase;
+    letter-spacing: .0625rem;
+    padding: 0.5rem 1rem;
+    background: var(--slds-g-color-neutral-base-95, rgb(243, 243, 243));
+}
+
+.row{
+    width: 100%;
+}
+
+.row:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+.stepTitle{
+    font-size: x-large;
+}

@@ -1,0 +1,452 @@
+<template>
+  <template if:true={showLoading}>
+    <lightning-spinner class="slds-is-fixed" alternative-text="Loading..." variant="brand"></lightning-spinner>
+  </template>
+  <template if:false={showLoading}>
+    <article class="slds-card invoiceConfig">
+      <div class="slds-card__header slds-grid">
+        <header class="slds-media slds-media_center slds-has-flexi-truncate">
+          <lightning-icon icon-name="utility:setup" alternative-text="Invoice Configuration" variant="success"></lightning-icon>
+          <div class="slds-media__body">
+            <h2 class="slds-card__header-title slds-m-left_small">
+              <a class="slds-card__header-link slds-truncate" title="Invoice Configuration">
+                <span>Invoice Configuration</span>
+              </a>
+            </h2>
+          </div>
+        </header>
+      </div>
+      <div class="slds-card__body slds-card__body_inner">
+        <div class="slds-section-title_divider slds-m-top_medium slds-m-bottom_medium">Allow Invoices to be created</div>
+        <div>
+          <p><lightning-icon icon-name="utility:info_alt"   
+                             alternative-text="info" 
+                             size="small" 
+                             title="Options to Save Invoices"></lightning-icon>
+            &nbsp;&nbsp;One option must be active. If everything is inactive then by default "Invoice Save" will remain active. After selecting objects and fields for QuickBooks Invoice, Line Item, and Payment, you are required to assign permissions to the chosen objects and fields.
+          </p>
+        </br>
+         <!-- Checkbox Settings starts here-->
+        <div class="slds-form-element slds-m-bottom_small">
+          <label class="slds-checkbox_toggle slds-grid">
+            <input type="checkbox" name="Save" checked={invoiceConfig.Save} onchange={handleChange} />
+            <span class="slds-checkbox_faux_container" aria-live="assertive">
+              <span class="slds-checkbox_faux"></span>
+            </span>
+            <span class="slds-form-element__label slds-m-bottom_none slds-m-left_small">Invoice Save</span>
+          </label>
+        </div>
+        <div class="slds-form-element slds-m-bottom_small">
+          <label class="slds-checkbox_toggle slds-grid">
+            <input type="checkbox" name="Save_And_Send" checked={invoiceConfig.Save_And_Send} onchange={handleChange} />
+            <span class="slds-checkbox_faux_container" aria-live="assertive">
+              <span class="slds-checkbox_faux"></span>
+            </span>
+            <span class="slds-form-element__label slds-m-bottom_none slds-m-left_small">Invoice Save & Send</span>
+          </label>
+        </div>
+        <!-- Checkbox Settings ends here-->
+        </div>
+        <br/>
+        
+        <div class="slds-section-title_divider slds-m-top_medium slds-m-bottom_medium">Default Invoice Setting</div>
+        <table>
+          <thead>
+            <tr>
+              <th>Defaults</th>
+              <th>Values</th>
+              <th>Refresh Values From Quickbooks</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Income Account</td>
+              <td>
+                <lightning-combobox name="incAcc" 
+                                    label="Income Account" 
+                                    value={incAccValue} 
+                                    variant="label-hidden"
+                                    placeholder="Select" 
+                                    options={accountOptions} 
+                                    onchange={handleChange}></lightning-combobox>
+              </td>
+              <td>
+                <lightning-button-icon name="incAcc"
+                                       icon-name="utility:refresh" 
+                                       variant="brand" 
+                                       alternative-text="Refresh" 
+                                       onclick={handleRefresh} value="Account"></lightning-button-icon>
+              </td>
+            </tr>
+            <tr>
+              <td>Terms</td>
+              <td>
+                <lightning-combobox name="terms" 
+                                    label="Terms" 
+                                    value={termValue} 
+                                    variant="label-hidden"
+                                    placeholder="Select" 
+                                    options={termsOptions} 
+                                    onchange={handleChange}></lightning-combobox>
+              </td>
+              <td>
+                <lightning-button-icon name="terms"
+                                       icon-name="utility:refresh" 
+                                       variant="brand" 
+                                       alternative-text="Refresh" 
+                                       onclick={handleRefresh} value="Term"></lightning-button-icon>
+              </td>
+            </tr>
+            <tr>
+              <td>Tax</td>
+              <td>
+                <lightning-combobox name="tax" 
+                                    label="Tax" 
+                                    value={taxValue} 
+                                    variant="label-hidden"
+                                    placeholder="Select Default tax Type" 
+                                    options={salesTaxOptions} 
+                                    onchange={handleChange}></lightning-combobox>
+              </td>
+              <td>
+                <lightning-button-icon name="tax"
+                                       icon-name="utility:refresh" 
+                                       variant="brand" 
+                                       alternative-text="Refresh" 
+                                       onclick={handleRefresh}  value="salesTax" ></lightning-button-icon>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="slds-card__body slds-card__body_inner" style="padding-left: 0px;padding-top: 10px;padding-bottom: 15PX;">
+          <div class="slds-section-title_divider slds-m-top_medium">
+              QUICKBOOK INVOICE DEFAULT OBJECT AND FIELD MAPPING SETTING
+          </div>
+          <br />
+          <div>
+          <p><lightning-icon icon-name="utility:info_alt" alternative-text="info" size="small" title="Object & Fields to store Invoice"></lightning-icon>
+            &nbsp;&nbsp;Search and Select Object to store Invoice and map Object fields
+          </p>
+          </div>
+          <div class="objectSelection slds-m-top_small">
+            <template if:true={flagIndicatingDataHasBeenLoadedInVariables}>
+              <c-multi-select-pick-list style="width: 30%;" 
+                                        onselectoption={handleSelectOption} 
+                                        options={options} 
+                                        selected-value={selectedValue} placeholder-data="Please Select Invoice Object"
+                                        label="Search and Select Object to store Invoices"></c-multi-select-pick-list>
+            </template>
+            <lightning-button if:true={selectedValue} 
+                              variant="brand" 
+                              label="Invoice Field Map" 
+                              title="Invoice Field Map" 
+                              onclick={mapInvoiceFields} 
+                              class="slds-m-left_medium slds-m-top_large"></lightning-button>
+          </div>
+          <template if:true={selectedValue}>
+            <div class="lineItemDiv slds-p-top_medium">
+              <template if:true={flagIndicatingDataHasBeenLoadedInVariables1}>
+                <c-multi-select-pick-list style="width: 30%;" 
+                                          onselectoptionnew ={handleLineItemNew} 
+                                          onselectoption={handlelineItemSelectOption} 
+                                          options={lineItemOption} 
+                                          selected-value={LineItemselectedValue} placeholder-data="Please Select LineItem Object"
+                                          label="Search and Select Object to store LineItem"></c-multi-select-pick-list>
+              </template>
+              <lightning-button if:true={LineItemselectedValue} 
+                                variant="brand" 
+                                label="LineItem Field Map" 
+                                title="LineItem Field Map" 
+                                onclick={mapLineItemFields} 
+                                class="slds-m-left_medium slds-m-top_large"></lightning-button>
+            </div>
+            <div class="lineItemDiv slds-p-top_medium">
+              <template if:true={flagIndicatingDataHasBeenLoadedInVariables2}>
+                <c-multi-select-pick-list style="width: 30%;"
+                                          onselectoptionnew ={handlePaymentNew} 
+                                          onselectoption={handlePaymentSelectOption} 
+                                          options={lineItemOption} 
+                                          selected-value={paymentSelectedValue} placeholder-data="Please Select Payment Object"
+                                          label="Search and Select Object to store Payment"></c-multi-select-pick-list>
+              </template>
+              <lightning-button if:true={paymentSelectedValue} 
+                                variant="brand" 
+                                label="Payment Field Map"  
+                                title="Payment Field Map" 
+                                onclick={mapPaymentFields} 
+                                class="slds-m-left_medium slds-m-top_large"></lightning-button>
+            </div>
+          </template>
+        </div>
+        </br>
+        <div class="slds-section-title_divider slds-m-top_medium slds-m-bottom_medium">INVOICES TO BE CREATED USING OPPORTUNITY</div>
+        <div>
+          
+
+          <!-- <lightning-layout multiple-rows="true">
+            <lightning-layout-item padding="horizontal-small" alignment-bump="left">
+              <lightning-button variant="brand" 
+                                label="Refresh Opportunity Fields" 
+                                name="Refresh_Opportunity_Fields"
+                                title="Refresh Opportunity Fields" 
+                                onclick={refreshInvoiceFields} 
+                                class="slds-m-left_x-small"></lightning-button>
+            </lightning-layout-item>
+          </lightning-layout> -->
+          <div class="slds-form-element slds-m-bottom_small">
+            <label class="slds-checkbox_toggle slds-grid">
+              <input type="checkbox" name="enable_opportunity_product"  onchange={handleChange} checked={invoiceConfig.EnableOpportunityProduct} />
+              <span class="slds-checkbox_faux_container" aria-live="assertive">
+                <span class="slds-checkbox_faux"></span>
+              </span>
+              <span class="slds-form-element__label slds-m-bottom_none slds-m-left_small">Populate Opportunity Product while creating Invoice from Salesforce.</span>
+            </label>
+          </div>
+          <div class="slds-form-element slds-m-bottom_small">
+            <label class="slds-checkbox_toggle slds-grid">
+              <input type="checkbox" name="create_opportunity_product"  onchange={handleChange} checked={invoiceConfig.CreateOpportunityProduct}/>
+              <span class="slds-checkbox_faux_container" aria-live="assertive">
+                <span class="slds-checkbox_faux"></span>
+              </span>
+              <span class="slds-form-element__label slds-m-bottom_none slds-m-left_small">Create Quickbook Item in Quickbook when the system discovers the Salesforce Opportunity Product utilised in Invoice is not in Quickbook.</span>
+            </label>
+          </div>
+          <table style="width: 90%;">
+            <thead>
+              <tr>
+                <th style="padding: 1%; width: 40%;">
+                  Invoice Field
+                </th>
+                <th colspan="4" style="padding: 1%; width: 60%;">
+                  Opportunity Field
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="padding: 1%;"> Invoice Due Date </td>
+                <td style="padding: 1%; min-width: 4%; width: 8%;">
+                  <lightning-input name="Invoice_Due_Date_Days"
+                                   label="Days" min="0" max="31"
+                                   message-when-range-overflow="Please enter a day between 0 and 31."
+                                   message-when-range-underflow="Please enter a day between 0 and 31."
+                                   type="number"
+                                   value={invoiceDateOptions.Invoice_Due_Date.Days} 
+                                   placeholder="Days"
+                                   variant="label-hidden" class="validate"
+                                   onchange={handleInvoiceChange}></lightning-input>
+                </td>
+                <td style="padding: 1%; min-width: 2%;width: 5%;">
+                  <span> Days </span>
+                </td>
+                <td style="padding: 1%;">
+                  <lightning-combobox name="Invoice_Due_Date_After_Or_Before" 
+                                      label="Invoice Due Date"
+                                      value={invoiceDateOptions.Invoice_Due_Date.SelectedBeforeAfterFieldValue} 
+                                      variant="label-hidden"
+                                      options={invoiceDateOptions.Invoice_Due_Date.options} 
+                                      onchange={handleInvoiceChange}></lightning-combobox>
+                </td>
+                <td style="padding: 1%;">
+                  <lightning-combobox name="Invoice_Due_Date" 
+                                      label="Invoice Due Date"
+                                      value={invoiceDateOptions.Invoice_Due_Date.value}
+                                      variant="label-hidden" 
+                                      placeholder="Select Default Invoice Due Date"
+                                      options={fields.dateFields} 
+                                      onchange={handleInvoiceChange}></lightning-combobox>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding: 1%;"> Invoice Date </td>
+                <td style="padding: 1%; min-width: 4%; width: 8%;">
+                  <lightning-input name="Invoice_Date_Days" 
+                                   message-when-range-overflow="Please enter a day between 0 and 31."
+                                   message-when-range-underflow="Please enter a day between 0 and 31."
+                                   label="Days" min="0" max="31"
+                                   variant="label-hidden" 
+                                   placeholder="Days" 
+                                   type="number" class="validate"
+                                   value={invoiceDateOptions.Invoice_Date.Days}  
+                                   onchange={handleInvoiceChange}></lightning-input>
+                </td>
+                <td style="padding: 1%; min-width: 2%;width: 5%;">
+                  <span> Days </span>
+                </td>
+                <td style="padding: 1%; width:12%;">
+                  <lightning-combobox name="Invoice_Date_After_Or_Before" 
+                                      label="Invoice Date"
+                                      value={invoiceDateOptions.Invoice_Date.SelectedBeforeAfterFieldValue} 
+                                      variant="label-hidden"
+                                      options={invoiceDateOptions.Invoice_Date.options} 
+                                      onchange={handleInvoiceChange}></lightning-combobox>
+                </td>
+                <td style="padding: 1%; width:40%;">
+                  <lightning-combobox name="Invoice_Date" 
+                                      label="Invoice Date"
+                                      variant="label-hidden" 
+                                      options={fields.dateFields} 
+                                      value={invoiceDateOptions.Invoice_Date.value}
+                                      placeholder="Select Default Invoice Date" 
+                                      onchange={handleInvoiceChange}></lightning-combobox>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </br>
+
+        <div class="slds-section-title_divider slds-m-top_medium slds-m-bottom_medium">Assign permissions to selected objects and fields</div>
+        <div>
+          <p><lightning-icon icon-name="utility:info_alt"   
+                             alternative-text="info" 
+                             size="small" 
+                             title="Options to Save Invoices"></lightning-icon>
+            &nbsp;&nbsp;After selecting objects and fields for QuickBooks Invoice, Line Item, and Payment, you are required to assign permissions to the chosen objects and fields
+          </p>
+          <p style="padding: 10px 10px 15px 25px;">Please click the button below to assign permissions to the selected objects and fields for the <b>{siteProfileName}</b>.</p>
+          <p><lightning-button variant="brand" 
+                            label="Assign Permission" 
+                            title="Assign Permission"  
+                            onclick={handleAssignPermission}
+                            class="slds-m-around_large"></lightning-button></p>
+        </div>
+        <br/>
+      
+        <div class="slds-card__body slds-card__body_inner" style="padding-left: 0px;padding-top: 10px;padding-bottom: 15PX;">
+          <div class="slds-section-title_divider slds-m-top_medium">
+              DEFAULT PAYMENT SYNC SETTINGS
+          </div>
+          <br />
+          <div class="slds-form-element slds-m-bottom_small">
+            <label class="slds-checkbox_toggle slds-grid">
+              <input type="checkbox" name="Create_Update_Qb_Payment_In_Sf" checked={invoiceConfig.Create_Update_Qb_Payment_In_Sf} onchange={handleChange} />
+              <span class="slds-checkbox_faux_container" aria-live="assertive">
+                <span class="slds-checkbox_faux"></span>
+              </span>
+              <span class="slds-form-element__label slds-m-bottom_none slds-m-left_small">Create and Update Payment in Salesforce when new Payment is found in Quickbook not existing in Salesforce.</span>
+            </label>
+          </div>
+      </div>
+
+      
+
+        <div class="slds-align_absolute-center">
+          <lightning-button variant="brand" 
+                            label="Save" 
+                            title="Save"  
+                            onclick={handleSave}
+                            disabled={disableSave}
+                            class="slds-m-around_large"></lightning-button>
+        </div>
+
+      </div>
+    </article>
+    <!-- modal popup -->
+    <template if:true={isModalOpen}>
+        <!-- Modal/Popup Box LWC starts here -->
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <!-- Modal/Popup Box LWC header here -->
+                <header class="slds-modal__header">
+                    <!-- <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick={cancelModal}> -->
+                      <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick={closeModal}>  
+                      <lightning-icon icon-name="utility:close"
+                            alternative-text="close"
+                            variant="inverse"
+                            size="small" ></lightning-icon>
+                        <span class="slds-assistive-text">Close</span>
+                    </button>
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">{modalHeader}</h2>
+                </header>
+                <!-- Modal/Popup Box LWC body starts here -->
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                    <table>
+                    <thead>
+                        <tr>
+                            <th style="font-size: 14px;">Quickbooks Invoice Fields</th>
+                            <th style="font-size: 14px;">Salesforce {selectObjectLabel} Fields</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <th colspan="3">
+                        <div class="slds-text-title_bold" style="font-weight: 400; color:red">
+                          <lightning-icon class="noteReadonlyIcon slds-p-right_xx-small" icon-name="utility:lock" size="x-small" alternative-text="Locked field"></lightning-icon>
+                           : Fields with the lock icon are read-only and uneditable. These fields are not considered while syncing from SF to QB.
+                        </div>
+                        </th>
+                       </tr>
+                       <template for:each={QBField} for:item="fld">
+                        <tr key={fld.name}>
+                            <td><template if:true={fld.require}><span style="color:red;">* </span></template>
+                              <template if:true={fld.readOnly}><lightning-icon icon-name="utility:lock" size="xx-small" alternative-text="Read-only field" class="readonlyClass"></lightning-icon></template>
+                              {fld.label} <lightning-helptext if:true={fld.helpText} content={fld.helpText} ></lightning-helptext>
+                            </td>
+                            <!-- <td><template if:true={fld.readOnly}><lightning-icon icon-name="utility:read_only" size="small" alternative-text="Read-only field"></lightning-icon></template>{fld.label}</td> -->
+                            <td>
+                              <template if:true={fld.options}>
+                                <lightning-combobox name={fld.value} data-configname={fld.name}
+                                                    label={fld.label}
+                                                    placeholder="Select Fields"
+                                                    value={fld.value}
+                                                    variant="label-hidden" 
+                                                    options={fld.options} 
+                                                    onchange={handlefieldChange}></lightning-combobox>
+                              </template>
+                              <template if:false={fld.options}>
+                                <p class="slds-text-color_error">No field of type <span style="text-transform: uppercase;">{fld.type}</span> is currently present. Please create a new field.</p>
+                              </template>
+                            </td>
+                        </tr>
+                        <template if:true={fld.showReference}>
+                          <tr key={fld.name}>
+                            <td colspan="2">
+                              <table style="width: 100%;background-color: #8080801c;border: 1px solid #8080804f;" if:true={showCustomerOptions}>
+                                 <template if:true={showLoadingModal}>
+                                  <lightning-spinner class="slds-is-fixed" alternative-text="Loading..." variant="brand"></lightning-spinner>
+                                </template>
+                                  <tr>
+                                    <th>Quickbooks Customer Fields</th>
+                                    <th>Salesforce Fields</th>
+                                  </tr>
+                                  <template for:each={CustomerConfigfields} for:item="custfld">
+                                    <tr key={custfld.name}>
+                                      <td><template if:true={custfld.require}><span style="color:red;">* </span></template>
+                                        <template if:true={custfld.readOnly}><lightning-icon icon-name="utility:lock" size="xx-small" alternative-text="Read-only field" class="readonlyClass"></lightning-icon></template>
+                                        {custfld.label}</td>
+                                      <td>
+                                        <template if:true={custfld.options}>
+                                          <lightning-combobox name={custfld.value} data-configname={custfld.name}
+                                                              label={custfld.label}
+                                                              placeholder="Select Fields"
+                                                              value={custfld.value}
+                                                              variant="label-hidden" 
+                                                              options={custfld.options} 
+                                                              onchange={handleCustomerfieldChange}></lightning-combobox>
+                                        </template>
+                                        <template if:false={custfld.options}>
+                                          <p class="slds-text-color_error">No field of type <span style="text-transform: uppercase;">{fld.type}</span> is currently present. Please create a new field.</p>
+                                        </template>
+                                        </td>
+                                    </tr>
+                                  </template>
+                              </table>
+                          </td>
+                          </tr>
+                        </template>
+                       </template>
+                    </tbody>
+                  </table>
+                </div>
+                <!-- Modal/Popup Box LWC footer starts here -->
+                <footer class="slds-modal__footer" style="text-align: center;">
+                  <button class="slds-button slds-button_brand" onclick={clearMapping} title="OK">Clear</button> 
+                  <button class="slds-button slds-button_brand" onclick={closeModal} title="Cancel">Continue</button>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+  </template>
+</template>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>See_this_Invoice_in_QuickBook__c</fullName>
+    <externalId>false</externalId>
+    <formula>HYPERLINK(&quot;https://app.qbo.intuit.com/app/invoice?txnId=&quot;+   Invoice_Qb_Id__c , Name ,&quot;_blank&quot;)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>See this Invoice in QuickBook</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

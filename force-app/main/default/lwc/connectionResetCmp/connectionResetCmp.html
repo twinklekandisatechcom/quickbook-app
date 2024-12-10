@@ -1,0 +1,244 @@
+<template>
+    <template if:true={showLoading}>
+        <lightning-spinner class="slds-is-fixed" alternative-text="Loading..." variant="brand"></lightning-spinner>
+    </template>
+    <div class="slds-section slds-is-open">
+        <h3 class="slds-section__title slds-theme_shade">
+            <span class="slds-truncate slds-p-horizontal_small" 
+                  title="Section Title">
+                  Reset Connections</span>
+        </h3>
+        <br/>
+        <p>Please provide necessary details in case of resetting connection between Salesforce and Quickbook.</p>
+        <ol class="slds-setup-assistant">
+            <!-- Sync Quickbook with Salesforce -->
+            <template if:true={showQBConnection}>
+                <div aria-hidden="false" class="slds-summary-detail__content">
+                    <div class="slds-setup-assistant__step-detail">
+                        <div class="row">
+                            <div class="">
+                                <p class="stepTitle"><b>Quickbook Account Connection</b></p>
+                                <p>To connect your Salesforce Org account and Quickbook account, please input the Quickbook Consumer Key below. Please click the "Show Instructions" button below to view the directions for getting this.</p>
+                                <br/>
+                                <div>
+                                    <lightning-input name="Client ID"  pattern="^\S+$" message-when-pattern-mismatch="No spaces allowed"
+                                                        type="text" 
+                                                        label="Enter Client ID" 
+                                                        value={consumerKey} 
+                                                        onchange={updateValue} 
+                                                        disabled={disableInput} 
+                                                        required></lightning-input>
+                                </div>
+                                <br/>
+                                <div>
+                                    <lightning-input name="Client Secret"  pattern="^\S+$" message-when-pattern-mismatch="No spaces allowed"
+                                                     type="text" 
+                                                     label="Enter Client Secret" 
+                                                     value={consumerSecret} 
+                                                     onchange={updateValue} 
+                                                     disabled={disableInput} 
+                                                     required></lightning-input>
+                                </div>
+                                <br/>
+                                <div>
+                                    <lightning-combobox name="Environment"
+                                                        label="Environment Type"
+                                                        placeholder="-- Please select the type of Environment --"
+                                                        value={environmentValue}
+                                                        options={environmentOptions}
+                                                        onchange={updateValue}
+                                                        disabled={disableInput} 
+                                                        required></lightning-combobox>
+                                </div>
+                                <br/>
+                                <div class="icon">
+                                    <div>
+                                        <lightning-input data-id="redirectLink" 
+                                                            type="url" 
+                                                            label={redirectUrlLabel}
+                                                            placeholder={redirectUrl}
+                                                            onchange={updateValue}
+                                                            disabled="true" 
+                                                            required></lightning-input>
+                                    </div>
+                                </div>
+                                <br/>
+                                <div class="slds-align_absolute-center">
+                                    <lightning-button variant="brand" 
+                                                      label="Show Instructions" 
+                                                      title="Show Instructions" 
+                                                      class="slds-m-right_x-small" 
+                                                      onclick={showInstruction} 
+                                                      icon-name="utility:preview"></lightning-button>
+                                    <lightning-button variant="destructive-text" if:true={disableReset}
+                                                      label=Reset 
+                                                      title="Reset"
+                                                      class="slds-m-right_x-small"
+                                                      onclick={handleReset}></lightning-button>
+                                    <lightning-button variant="brand" if:true={disableSave}
+                                                      label=Save disabled={disableSaveBtn} 
+                                                      title="Save" 
+                                                      onclick={handleSave}></lightning-button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </template>
+        </ol>
+    </div>
+    <br/>
+    <template if:true={showQBWebhook}>
+        <template if:false={showWebhookSteps}>
+            <h3 class="slds-section__title slds-theme_shade">
+                <span class="slds-truncate slds-p-horizontal_small" 
+                      title="Section Title">Reset Webhook Connection </span>
+            </h3>
+            <br/>
+            <p>Please provide necessary details in case of resetting Quickbook webhook connection with Salesforce.</p>
+            <div class="slds-setup-assistant__step-detail slds-m-top_small">
+                <lightning-input type="text" 
+                                 name ="Webhook Key" 
+                                 label="Webhook Key" 
+                                 value={webhookKey} 
+                                 disabled={disableWebhookInput} 
+                                 onchange={updateValue}></lightning-input>
+            </div>
+            <br/>
+            <div class="slds-align_absolute-center">
+                <lightning-button variant="destructive-text" 
+                                  label="Reset" 
+                                  title="Reset" 
+                                  class="slds-m-right_x-small" 
+                                  onclick={handleWebReset}></lightning-button>
+            </div>
+        </template>
+        <template if:true={showWebhookSteps}>
+            <div class="slds-section slds-is-open">
+                <h3 class="slds-section__title slds-theme_shade">
+                    <span class="slds-truncate slds-p-horizontal_small" 
+                        title="Section Title">Reset Webhook Connection </span>
+                </h3>
+                <br/>
+                <p class="slds-text-title_bold">Steps for Resetting QuickBooks Webhook Connection with Salesforce:</p>
+                <br/>
+                <template if:false={disableWebhookInput}>
+                    <ol class="slds-list_ordered slds-setup-assistant__step-detail" style="margin-bottom: 20px;margin-left: 0;padding-left: 15px;">
+                        <li>Navigate to the QuickBooks App Manager at 'https://developer.intuit.com/app/developer/homepage'.</li>
+                        <li>Click on the "Dashboard" tab at the top.</li>
+                        <li>Select and click on the App you want to configure or integrate with your Salesforce org.</li>
+                        <li>Click on the Webhooks tab on the left-hand side. Notice there are two tabs, one for Sandbox and another for Production.</li>
+                        <li>Choose the relevant Webhooks tab based on your integration needs.</li>
+                    </ol>
+                    <p class="slds-text-title_bold">Setting Up EndPoints</p>
+                    <ol class="slds-list_ordered slds-setup-assistant__step-detail">
+                        <template if:true={showSiteCreation}>
+                            <li>Go to sites setup by clicking on<lightning-button variant="brand" 
+                                                                                  icon-name="utility:forward_up" 
+                                                                                  label="Open Sites" 
+                                                                                  title="Open Sites" 
+                                                                                  class="slds-m-left_x-small" 
+                                                                                  onclick={openSites}></lightning-button>
+                            </li>
+                            <li>Click on a 'New' button of Sites Section.</li>
+                            <li>Fill in required values like Site Label, Site Name, and check other fields.</li>
+                            <li>Click on Save and then click on the refresh button beside the picklist to update the site list.</li>
+                            <li>
+                                <p>
+                                    Select a Site from the list to generate the URL for your Webhook.
+                                </p>
+                                <table>
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <lightning-combobox name="Sites" 
+                                                                    label="Sites" 
+                                                                    value={siteVal}
+                                                                    placeholder="Select Site" 
+                                                                    variant="label-hidden" 
+                                                                    options={siteOptions} 
+                                                                    onchange={fetchSecureURL} 
+                                                                    disabled={disableWebhookInput}></lightning-combobox>
+                                            </td>
+                                            <td style="padding: 7px;">
+                                                <lightning-button-icon name="Sites" 
+                                                                    icon-name="utility:refresh"  
+                                                                    variant="brand" 
+                                                                    alternative-text="Refresh Sites" 
+                                                                    onclick={getAllSites}></lightning-button-icon>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </li>
+                            <li>
+                                <lightning-input type="text" 
+                                                 label="Site Secure URL for Quickbook" 
+                                                 value={siteSecureURL} 
+                                                 disabled></lightning-input>
+                            </li>
+                            <li>Copy the above URL and paste it into the Endpoint URL in the Webhooks settings.</li>
+                            <li>After pasting the Endpoint URL, the 'Verifier Token' will be generated in the QuickBooks App Manager. Copy the Verifier Token and paste it into the text box below.</li>
+                                                            <li>
+                                                                <div style="width: 95%;">
+                                                                    <lightning-input type="text" 
+                                                                                    label="Verifier Token" 
+                                                                                    value={verifierToken} 
+                                                                                    onchange={onchangeVerifierToken} 
+                                                                                    ></lightning-input>
+                                                                </div>
+                                                            </li>
+                            <li>Click on Save.</li>
+                            <br/>
+                            <template if:true={disableWebhookSave}>
+                                <li>Go back to Quickbook App Manager and then to Webhook Setting.</li>
+                                <li>Under Status Section Click on "Send 'Intent to receive'" button.</li>
+                                <li>After few minutes Status will be changed to OK.</li>
+                                <li>Now you can go to Salesforce and Complete Further Steps.</li>
+                            </template>
+                        </template>
+                    </ol>
+                    <p class="slds-text-title_bold">Setting Up Event Trigger</p>
+                    <ol class="slds-list_ordered slds-setup-assistant__step-detail">
+                        <template if:true={showSiteCreation}>
+                        <li>Below the 'Endpoints' Section, there is an 'Event triggers' Section.</li>
+                        <li>Click on 'Show Webhooks'.</li>
+                        <li>You will see <b>ENTITY and ACTION</b>. You can choose the Actions for respective entity</li>    
+                        </template>
+                    </ol>
+                    <br/>
+                    <div class="slds-align_absolute-center">
+                        <lightning-button variant="brand" 
+                                        label="Save" 
+                                        title="Save" 
+                                        class="slds-m-right_x-small" 
+                                        onclick={handleWebhookSave} 
+                                        disabled={disableStepSave}></lightning-button>
+                    </div>
+                </template>
+            </div>
+        </template>
+    </template>
+    <div>
+        <c-modal-pop-up show-modal={showModal} 
+                        show-positive={showPositiveButton}
+                        show-negative={showNegativeButton}
+                        positive-button-label={positiveButtonLabel}
+                        onpositive={closeModal}
+                        onclose={closeModal}>
+            <div slot="header">
+                <h2 slot="header" id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Instructions to get Consumer Key and Secret</h2>
+            </div>
+            <div slot="body">
+                <ol class="slds-list_ordered">
+                    <li>Navigate to https://developer.intuit.com/app/developer/dashboard.</li>
+                    <li>Click the "Create an App" button.</li>
+                    <li>Select the platform you want to develop for App.</li>
+                    <li>Give your app a name and Select an Scope.</li>
+                    <li>In Development Setting their is a 'Keys & Credentials' tab that will get Client ID and Client Secret.</li>
+                    <li>{redirectUrlLabel}</li>
+                </ol>                            
+            </div>
+        </c-modal-pop-up>
+    </div>
+</template>

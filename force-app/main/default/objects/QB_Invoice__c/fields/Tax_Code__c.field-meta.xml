@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Tax_Code__c</fullName>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <label>Tax Code</label>
+    <lookupFilter>
+        <active>true</active>
+        <errorMessage>The Tax Code does not exists. Please contact your Administrator to sync up the Tax Codes of QuickBooks, from the QuickBook Setup Page.</errorMessage>
+        <filterItems>
+            <field>QB_MetaData__c.Type__c</field>
+            <operation>equals</operation>
+            <value>salesTax</value>
+        </filterItems>
+        <isOptional>false</isOptional>
+    </lookupFilter>
+    <referenceTo>QB_MetaData__c</referenceTo>
+    <relationshipLabel>QB Invoices</relationshipLabel>
+    <relationshipName>QB_Invoices</relationshipName>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Lookup</type>
+</CustomField>

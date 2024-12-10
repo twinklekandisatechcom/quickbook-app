@@ -1,0 +1,16 @@
+.setupConfig .slds-card__header.slds-grid {
+    border-bottom: 3px solid #2CA01C;
+    box-shadow: 3px 0px 3px #2CA01C;
+    padding: 22px;
+    margin-top: -10px;
+    margin-left: -4px;
+}
+.row{
+    width: 100%;
+}
+.stepTitle{
+    font-size: x-large;
+}
+.green-background {
+    background: green;
+}
