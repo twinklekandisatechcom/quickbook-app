@@ -45,7 +45,7 @@ public with sharing class CalloutUtlityController {
             Http hp =new Http();
             HttpRequest req = new HttpRequest();
 
-            req.setEndpoint(endpoint);
+            req.setEndpoint(EncodingUtil.urlEncode(endpoint, 'UTF-8'));
             req.setMethod(method);
             string authorizationHeader = 'Bearer '+Utils.processDecryption(qbInfo.KTQB__Access_Token__c);
             req.setHeader('Authorization', authorizationHeader);
