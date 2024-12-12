@@ -2,7 +2,7 @@
  * @description Test class for HelpSupportController to ensure the methods handle user information, file management, and case submission correctly within the system.
  */
 @isTest
-public class HelpSupportController_Test {
+public with sharing class HelpSupportController_Test {
     /**
      * @description Tests getUserInfo method to ensure it correctly retrieves user information in the context of the running user.
      */

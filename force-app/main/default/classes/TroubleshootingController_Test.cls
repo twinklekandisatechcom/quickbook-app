@@ -1,5 +1,5 @@
 @isTest
-public class TroubleshootingController_Test {
+public with sharing class TroubleshootingController_Test {
     
     /**
      * @description createData

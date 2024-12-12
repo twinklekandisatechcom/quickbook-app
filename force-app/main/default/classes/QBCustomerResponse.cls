@@ -7,7 +7,13 @@
  * @last modified by  : Mangesh Kadam
  * Modified on 10-09-2024 by Twinkle
  **/
-public without sharing class QBCustomerResponse {
+public with sharing class QBCustomerResponse {
+
+    /**
+     * @description Represents the query response.
+    */
+    public QueryResponse QueryResponse;
+
     /**
      * @description Parses the JSON string into a CustomerRes object.
      *
@@ -117,8 +123,6 @@ public without sharing class QBCustomerResponse {
     public class QueryResponse {
       public List<XCustomer> Customer;
     }
-  
-    public QueryResponse QueryResponse;
     /**
      * @description Represents a response containing a single customer object.
     */

@@ -1,5 +1,5 @@
 @isTest
-public class BatchToRefreshAccessTokenInQB_Test {
+public with sharing class BatchToRefreshAccessTokenInQB_Test {
 	
    	@isTest
     static void testBatchClass(){

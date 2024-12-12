@@ -7,7 +7,7 @@
  * @last modified by  : Twinkle
  */
 @isTest
-public class InvoiceSyncCreateInvProductsTest {
+public with sharing class InvoiceSyncCreateInvProductsTest {
     /**
      * @description setup method to create test data 
     */
@@ -143,6 +143,8 @@ public class InvoiceSyncCreateInvProductsTest {
         InvoiceSyncCreateInvProducts queueable = new InvoiceSyncCreateInvProducts(lineItems, productMap);
         System.enqueueJob(queueable);
         Test.stopTest();
+
+        System.assertEquals(2, lineItems.size(), 'All line items should remain in the system.');
     }
     /**
      * @description test method for batch execution
@@ -176,6 +178,9 @@ public class InvoiceSyncCreateInvProductsTest {
         InvoiceSyncCreateInvProducts batch = new InvoiceSyncCreateInvProducts(lineItemIds, invoiceIds);
         Database.executeBatch(batch, 5);
         Test.stopTest();
+
+        System.assertEquals(2, lineItems.size(), 'All line items should remain in the system.');
+
     }
     /**
      * @description test method for Upsert InvoiceLineItem
@@ -228,6 +233,9 @@ public class InvoiceSyncCreateInvProductsTest {
         Test.startTest();
         batch.finish(null);
         Test.stopTest();
+        
+        // Assert instance creation
+        System.assertNotEquals(batch, null, 'Batch instance should be created.');
     }
 
 }

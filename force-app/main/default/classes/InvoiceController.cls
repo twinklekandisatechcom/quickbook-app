@@ -227,7 +227,10 @@ public with sharing class InvoiceController {
 						invoiceRecords.add(invoiceRecord);
                         
                         invoiceRecordId = invoiceRecord.Id;
-                        if (Schema.getGlobalDescribe().get(config.KTQB__Invoice_Object_Name__c).getDescribe().isCreateable()) {
+                        List<Schema.DescribeSObjectResult> describeResults = Schema.describeSObjects(new String[]{config.KTQB__Invoice_Object_Name__c});
+                        Schema.DescribeSObjectResult describeResult = describeResults[0]; 
+                        //if (Schema.getGlobalDescribe().get(config.KTQB__Invoice_Object_Name__c).getDescribe().isCreateable()) {
+                        if (describeResult.isCreateable()) {
                            insert as user invoiceRecord;
                            invoiceRecordId = invoiceRecord.Id;
                         }              
@@ -237,7 +240,11 @@ public with sharing class InvoiceController {
                             if(lineItemMap.size() > 0){
                                 List<SObject> lineItemList = new List<SObject>();
                                 for(Integer i=0;i<oppProducts.size();i++){
-                                    SObject lineItemRecord = Schema.getGlobalDescribe().get(config.KTQB__LineItem_Object_Name__c).newSObject();
+                                    //SObject lineItemRecord = Schema.getGlobalDescribe().get(config.KTQB__LineItem_Object_Name__c).newSObject();
+                                    List<Schema.DescribeSObjectResult> describeResults1 = Schema.describeSObjects(new String[]{config.KTQB__LineItem_Object_Name__c});
+                                    Schema.DescribeSObjectResult describeResult1 = describeResults1[0]; 
+                                    SObject lineItemRecord = describeResult1.getSObjectType().newSObject(); 
+                                    
                                     if ((String)lineItemMap.get('Name').get('KTQB__Field_API_Name__c') != null) {
     								lineItemRecord.put((String)lineItemMap.get('Name').get('KTQB__Field_API_Name__c'), 'LineItem-'+(i+1)+' | '+'Invoice #' + wrapInvoice.invoice.docNumber);}
                                     if ((String)lineItemMap.get('Description').get('KTQB__Field_API_Name__c') != null) {
@@ -323,7 +330,11 @@ public with sharing class InvoiceController {
             if(InvoiceControllerHelper.isValidConfiguration(dataMap, config, customerMap)) {
                 String customerQBIdFieldAPIName = customerMap.get('QB Customer Id').KTQB__Field_API_Name__c;
                 String displayNameFieldAPIName = customerMap.get('Display Name').KTQB__Field_API_Name__c;
-                Set<String> customerObjectFields = Schema.getGlobalDescribe().get(config.KTQB__Invoice_Customer_ChildObject_Api_Name__c).getDescribe().fields.getMap().keySet();
+                //Set<String> customerObjectFields = Schema.getGlobalDescribe().get(config.KTQB__Invoice_Customer_ChildObject_Api_Name__c).getDescribe().fields.getMap().keySet();
+                List<Schema.DescribeSObjectResult> describeResults = Schema.describeSObjects(
+                    new List<String>{config.KTQB__Invoice_Customer_ChildObject_Api_Name__c}
+                );
+                Set<String> customerObjectFields = describeResults[0].fields.getMap().keySet();
                 List<String> fieldChecks =  InvoiceControllerHelper.getFieldChecks(customerMap);
                 if(!fieldChecks.isEmpty()) {
                     String query = 'SELECT ' + String.join(new List<String>(customerObjectFields), ',') +
@@ -367,6 +378,10 @@ public with sharing class InvoiceController {
         try{
             if (dataMap.size() > 0 && config.KTQB__Invoice_Customer_ChildObject_Api_Name__c != null && (String)dataMap.get('QB Customer').get('KTQB__Field_API_Name__c') !=null
                 && customerMap.size() > 0 && (String)customerMap.get('QB Customer Id').get('KTQB__Field_API_Name__c') !=null) {
+            		List<Schema.DescribeSObjectResult> objectDescriptions = Schema.describeSObjects(new String[] { config.KTQB__Invoice_Customer_ChildObject_Api_Name__c });
+            		Schema.DescribeSObjectResult describeResult = objectDescriptions[0];
+            		Schema.SObjectType customerObjectType = describeResult.getSObjectType();
+                    
                     SObject customerRecord = InvoiceControllerHelper.getCustomerMap(config.KTQB__Invoice_Customer_ChildObject_Api_Name__c,customerMap,customerData,customerResponseMap);
                     if((String)customerMap.get('Qb Customer Sync Token').get('KTQB__Field_API_Name__c') != null){
                         String syncTokenStr = (String)customerResponseMap.get('SyncToken');
@@ -396,8 +411,9 @@ public with sharing class InvoiceController {
                             break;
                         }
                     }
-                    if (isNotEmpty && Schema.getGlobalDescribe().get(config.KTQB__Invoice_Customer_ChildObject_Api_Name__c).getDescribe(SObjectDescribeOptions.DEFERRED).isCreateable()) {
-                        if(customerData.action == 'update'){
+                    //if (isNotEmpty && Schema.getGlobalDescribe().get(config.KTQB__Invoice_Customer_ChildObject_Api_Name__c).getDescribe(SObjectDescribeOptions.DEFERRED).isCreateable()) {
+                    if (isNotEmpty && customerObjectType.getDescribe(SObjectDescribeOptions.DEFERRED).isCreateable()) {    
+                    	if(customerData.action == 'update'){
                             customerRecord.put('Id', customerData.id);
                         }
                         List<SObject> customerRecords = new List<SObject>();

@@ -7,7 +7,7 @@
  * @last modified by  : Mangesh Kadam
  **/
 
-public without sharing class QBPaymentResponse {
+public with sharing class QBPaymentResponse {
     
     /**
      * @description : parseJSON method is responsible for converting a JSON string of payment data into a structured Apex object.

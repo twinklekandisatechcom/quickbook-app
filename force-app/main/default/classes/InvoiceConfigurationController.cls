@@ -88,7 +88,9 @@ public with sharing class InvoiceConfigurationController {
             }
 
             if(objectConfigurationListToUpdate.size() > 0){
-                if( Schema.getGlobalDescribe().get(objectName).getDescribe().isUpdateable()){
+                Schema.DescribeSObjectResult describeResult = Schema.describeSObjects(new String[]{objectName})[0];
+                //if( Schema.getGlobalDescribe().get(objectName).getDescribe().isUpdateable()){
+                if(describeResult.isUpdateable()){
                     update as system objectConfigurationListToUpdate;
                     updated = true;
                     /*List<Database.SaveResult> sR = Database.update(objectConfigurationListToUpdate,AccessLevel.User_mode);
@@ -116,7 +118,8 @@ public with sharing class InvoiceConfigurationController {
         InvoiceObjectWrapper invoiceObjectWrap =  new InvoiceObjectWrapper();
         try{
             list<Picklistwrapper> objectFields = getFieldMap(objectApiName);
-            Schema.DescribeSObjectResult objDescribe = Schema.getGlobalDescribe().get(objectApiName).getDescribe();
+            //Schema.DescribeSObjectResult objDescribe = Schema.getGlobalDescribe().get(objectApiName).getDescribe();
+            Schema.DescribeSObjectResult objDescribe = Schema.describeSObjects(new String[]{objectApiName})[0];
             List<ObjectInfo> childObjectInfos = new List<ObjectInfo>();
             
             for (Schema.ChildRelationship cr : objDescribe.getChildRelationships()) {

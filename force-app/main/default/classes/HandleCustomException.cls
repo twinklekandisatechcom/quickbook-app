@@ -18,7 +18,7 @@ public with sharing class HandleCustomException extends Exception{
             String dmLimit = '2. Number of records queried so far /  Number allowed: ' + Limits.getDmlRows() + '/' + Limits.getLimitDmlRows();
             String dmlStat = '3. Number of DML statements used so far / Number allowed: ' +  Limits.getDmlStatements() + '/' + Limits.getLimitDmlStatements();   
             String cPUT = '4. Amount of CPU time (in ms) used so far / CPU usage time (in ms) allowed: ' + Limits.getCpuTime() + '/' + Limits.getLimitCpuTime();
-            
+            list<KTQB__QB_Log__c> logList = new list<KTQB__QB_Log__c>();
             //Log information in object
             KTQB__QB_Log__c exc = new KTQB__QB_Log__c();
             exc.KTQB__Govt_Limit_in_Executing_Code__c = String.format('{0}\n{1}\n{2}\n{3}',new List<string>{queryLimit, dmLimit,dmlStat,cPUT});
@@ -29,6 +29,7 @@ public with sharing class HandleCustomException extends Exception{
             if(joinedString != null){
                 exc.KTQB__Helper__c=joinedString;
             }
+            logList.add(exc);
             //exc.ClassName__c=className;
             if(Schema.sObjectType.KTQB__QB_Log__c.isCreateable()){
                 database.insert(exc,AccessLevel.User_mode); 

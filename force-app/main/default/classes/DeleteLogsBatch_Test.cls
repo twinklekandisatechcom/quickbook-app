@@ -1,5 +1,5 @@
 @isTest
-public class DeleteLogsBatch_Test {
+public with sharing class DeleteLogsBatch_Test {
 	@testSetup
     static void setupData() {
 		// Create test data

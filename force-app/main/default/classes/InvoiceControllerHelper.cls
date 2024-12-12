@@ -59,7 +59,11 @@ public with sharing class InvoiceControllerHelper {
                                                          KTQB__LineItem_Object_Name__c,KTQB__Invoice_Object_Name__c FROM KTQB__InvoiceConfigurationOptions__c 
                                                      WHERE SetupOwnerId =: UserInfo.getOrganizationId() WITH USER_MODE];
         boolean percentBased = (invCustomeData.discountTypeValue == 'Value') ? false : true;
-        SObject invoiceRecord = Schema.getGlobalDescribe().get(config.Invoice_Object_Name__c).newSObject();
+        //SObject invoiceRecord = Schema.getGlobalDescribe().get(config.Invoice_Object_Name__c).newSObject();
+        List<Schema.DescribeSObjectResult> describeResults = Schema.describeSObjects(new String[]{config.Invoice_Object_Name__c});
+        Schema.DescribeSObjectResult describeResult = describeResults[0]; 
+        SObject invoiceRecord = describeResult.getSObjectType().newSObject(); 
+
         string invoiceNum = (wrapInvoice.invoice.docNumber != null) ? 'Invoice #'+wrapInvoice.invoice.docNumber : 'Invoice';
         setFieldValue(dataMap, 'Name', 'KTQB__Field_API_Name__c', invoiceNum, invoiceRecord);
         if (String.isNotBlank(invCustomeData.discountTotal)) {setFieldValue(dataMap, 'Discount Amount', 'KTQB__Field_API_Name__c', Math.abs(decimal.valueOf(invCustomeData.discountTotal)), invoiceRecord);}
@@ -82,8 +86,8 @@ public with sharing class InvoiceControllerHelper {
 		setFieldValue(dataMap, 'Apply discount after sales tax', 'KTQB__Field_API_Name__c', !invCustomeData.discountAfterTax, invoiceRecord);
         //setFieldValue(dataMap, 'Currency Reference', 'KTQB__Field_API_Name__c', !invCustomeData.discountAfterTax, invoiceRecord);
         if (invCustomeData.taxId != null) {
-            if (String.isNotBlank(invCustomeData.taxAmount)) setFieldValue(dataMap, 'Total Tax', 'KTQB__Field_API_Name__c', Decimal.valueOf(invCustomeData.taxAmount), invoiceRecord);
-            if (String.isNotBlank(invCustomeData.taxRate)) setFieldValue(dataMap, 'Tax Rate', 'KTQB__Field_API_Name__c', Decimal.valueOf(invCustomeData.taxRate), invoiceRecord);
+            if (String.isNotBlank(invCustomeData.taxAmount)) {setFieldValue(dataMap, 'Total Tax', 'KTQB__Field_API_Name__c', Decimal.valueOf(invCustomeData.taxAmount), invoiceRecord);}
+            if (String.isNotBlank(invCustomeData.taxRate)) {setFieldValue(dataMap, 'Tax Rate', 'KTQB__Field_API_Name__c', Decimal.valueOf(invCustomeData.taxRate), invoiceRecord);}
             setFieldValue(dataMap, 'Tax Code', 'KTQB__Field_API_Name__c', invCustomeData.taxSFID, invoiceRecord);
         }
         if (wrapInvoice.invoice.salesTermRef != null && hasField(dataMap, 'Terms', 'KTQB__Field_API_Name__c')) {
@@ -329,7 +333,10 @@ public with sharing class InvoiceControllerHelper {
      * @return The API name of the account field if found, an empty string otherwise.
      */
     public static string getAccountApiNameForObject(string objectApiName, string type){
-        Schema.DescribeSObjectResult objectDescribe = Schema.getGlobalDescribe().get(objectApiName).getDescribe();
+        //Schema.DescribeSObjectResult objectDescribe = Schema.getGlobalDescribe().get(objectApiName).getDescribe();
+        List<Schema.DescribeSObjectResult> describes = Schema.describeSObjects(new String[] { objectApiName }, SObjectDescribeOptions.DEFERRED);
+        DescribeSObjectResult objectDescribe = describes[0];
+        
 		Map<String, Schema.SObjectField> fieldsMap = objectDescribe.fields.getMap();
 		for (String fieldName : fieldsMap.keySet()) {
             Schema.SObjectField field = fieldsMap.get(fieldName);
@@ -505,30 +512,43 @@ public with sharing class InvoiceControllerHelper {
      * @return An SObject record representing the customer with populated fields.
      */
     public static SObject getCustomerMap(
-    String invoiceCustomerObject,
-    Map<String, SObject> customerMap,
-    InvoiceController.CustomerConfigWrapper customerData,
-    Map<String, Object> customerResponseMap
+        String invoiceCustomerObject,
+        Map<String, SObject> customerMap,
+        InvoiceController.CustomerConfigWrapper customerData,
+        Map<String, Object> customerResponseMap
     ) {
-        SObject customerRecord = Schema.getGlobalDescribe().get(invoiceCustomerObject).newSObject();
-        Map<String, Schema.SObjectField> fieldsMap = customerRecord.getSObjectType().getDescribe().fields.getMap();
-
+        // Describe the SObject dynamically using Schema.describeSObjects
+        List<Schema.DescribeSObjectResult> describeResults = Schema.describeSObjects(new List<String>{invoiceCustomerObject});
+        
+        if (describeResults.isEmpty()) {
+            throw new IllegalArgumentException('Invalid object API name: ' + invoiceCustomerObject);
+        }
+        
+        // Get the SObjectType and create a new SObject instance
+        Schema.DescribeSObjectResult describeResult = describeResults[0];
+        SObject customerRecord = describeResult.getSObjectType().newSObject();
+        
+        // Get the field map for the SObject
+        Map<String, Schema.SObjectField> fieldsMap = describeResult.fields.getMap();
+        
+        // Iterate over the customer map and populate the record
         for (String fieldApiName : customerMap.keySet()) {
             if (customerMap.get(fieldApiName).get('KTQB__Field_API_Name__c') != null) {
                 Object fieldValue = getFieldFromCustomerData(fieldApiName, customerData, customerResponseMap);
-
+                
                 if (customerData.PersonalInfo.CurrencyCode != '' && customerData.PersonalInfo.CurrencyCode != null) {
-                    if(Utils.getIsMultiCurrencyOrg()) {
+                    if (Utils.getIsMultiCurrencyOrg()) {
                         customerRecord.put('CurrencyIsoCode', customerData.PersonalInfo.CurrencyCode);
                     }
                 }
-
+                
                 if (fieldValue != null && !String.isBlank(String.valueOf(fieldValue))) {
                     String targetFieldApiName = (String)customerMap.get(fieldApiName).get('KTQB__Field_API_Name__c');
                     Schema.SObjectField targetField = fieldsMap.get(targetFieldApiName);
+                    
                     // Get the field's describe result
                     Schema.DescribeFieldResult fieldDescribe = targetField.getDescribe();
-
+                    
                     // Check the field type and convert the value accordingly
                     if (fieldDescribe.getType() == Schema.DisplayType.Integer) {
                         customerRecord.put(targetFieldApiName, Integer.valueOf(String.valueOf(fieldValue)));

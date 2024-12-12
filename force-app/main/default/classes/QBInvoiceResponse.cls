@@ -7,7 +7,7 @@
  * @last modified by  : Mangesh Kadam
  **/
 
-public without sharing class QBInvoiceResponse {
+public with sharing class QBInvoiceResponse {
     /**
      * @description Parses JSON string to an InvoiceRes object.
      * @param json The JSON string representing an invoice response.

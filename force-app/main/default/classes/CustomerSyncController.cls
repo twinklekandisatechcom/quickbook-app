@@ -40,11 +40,20 @@ public with sharing class CustomerSyncController {
         Set<String> objectFields = new Set<String>();
     
         // Filter fields based on accessibility for the current user
-        for (Schema.SObjectField field : Schema.getGlobalDescribe().get(objectName).getDescribe().fields.getMap().values()) {
+        /*for (Schema.SObjectField field : Schema.getGlobalDescribe().get(objectName).getDescribe().fields.getMap().values()) {
+            if (field.getDescribe().isAccessible()) {
+                objectFields.add(field.getDescribe().getName());
+            }
+        }*/
+        Schema.DescribeSObjectResult describeResult = Schema.describeSObjects(new String[]{objectName})[0];
+        Map<String, Schema.SObjectField> fieldMap = describeResult.fields.getMap();
+        
+        for (Schema.SObjectField field : fieldMap.values()) {
             if (field.getDescribe().isAccessible()) {
                 objectFields.add(field.getDescribe().getName());
             }
         }
+
         Map<String, Object> bindValues = new Map<String, Object>{'recordId1' => recordId};
         String query = 'SELECT ' + String.escapeSingleQuotes(String.join(new List<String>(objectFields), ',')) + 
                     ' FROM ' + String.escapeSingleQuotes(objectName) + 
@@ -87,13 +96,19 @@ public with sharing class CustomerSyncController {
      * @return 'success'
      */
     @AuraEnabled public static string updateCustomerInSF(string syncToken, string recordID, string objectName, string syncFieldName){
-        SObject customerRecord = Schema.getGlobalDescribe().get(objectName).newSObject();
+        //SObject customerRecord = Schema.getGlobalDescribe().get(objectName).newSObject();
+        Schema.DescribeSObjectResult describeResult = Schema.describeSObjects(new String[]{objectName})[0];
+        SObjectType sObjectType = describeResult.getSObjectType();
+        SObject customerRecord = sObjectType.newSObject();
+
+
         customerRecord.put(syncFieldName,Decimal.valueOf(syncToken));
         customerRecord.put('Id',recordID);
         List<SObject> customerRecords = new List<SObject>();
 		customerRecords.add(customerRecord);
-        if(Schema.getGlobalDescribe().get(objectName).getDescribe(SObjectDescribeOptions.DEFERRED).isUpdateable()){
-            update as user customerRecord;
+        //if(Schema.getGlobalDescribe().get(objectName).getDescribe(SObjectDescribeOptions.DEFERRED).isUpdateable()){
+        if(describeResult.isUpdateable()) {   
+        	update as user customerRecord;
         }
         
         return 'success'; 

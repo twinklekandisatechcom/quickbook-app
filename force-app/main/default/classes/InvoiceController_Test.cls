@@ -1,5 +1,5 @@
 @isTest
-public class InvoiceController_Test {
+public with sharing class InvoiceController_Test {
     
     /**
      * @description setup method to create test data 
@@ -139,27 +139,34 @@ public class InvoiceController_Test {
         InvoiceController.ShippingInfo shippingInfo = new InvoiceController.ShippingInfo();
         shippingInfo.shippingLine = '456 Shipping Ln';
         customerData.shippingInfo = shippingInfo;
-
+    
         // Step 2: Create a mock customer map with field mappings
         Map<String, SObject> customerMap = new Map<String, SObject>();
-        SObject fieldMapping1 = Schema.getGlobalDescribe().get('KTQB__Customer_Object_Field_Mapping__c').newSObject();
+    
+        // Use Schema.describeSObjects() to describe the object and fields
+        List<Schema.DescribeSObjectResult> describeResults = Schema.describeSObjects(new String[]{'KTQB__Customer_Object_Field_Mapping__c'});
+        Schema.DescribeSObjectResult describeResult = describeResults[0];
+        Map<String, Schema.SObjectField> fieldMap = describeResult.fields.getMap();
+    
+        // Create a new SObject instance from the object described by DescribeSObjectResult
+        SObject fieldMapping1 = (SObject) describeResult.getSObjectType().newSObject();
         fieldMapping1.put('KTQB__Field_API_Name__c', 'FirstName');
         customerMap.put('GivenName', fieldMapping1);
-
-        SObject fieldMapping2 = Schema.getGlobalDescribe().get('KTQB__Customer_Object_Field_Mapping__c').newSObject();
+    
+        SObject fieldMapping2 = (SObject) describeResult.getSObjectType().newSObject();
         fieldMapping2.put('KTQB__Field_API_Name__c', 'LastName');
         customerMap.put('FamilyName', fieldMapping2);
-
-        SObject fieldMapping3 = Schema.getGlobalDescribe().get('KTQB__Customer_Object_Field_Mapping__c').newSObject();
+    
+        SObject fieldMapping3 = (SObject) describeResult.getSObjectType().newSObject();
         fieldMapping3.put('KTQB__Field_API_Name__c', 'Email');
         customerMap.put('Email', fieldMapping3);
-
+    
         // Step 3: Mock customerResponseMap
         Map<String, Object> customerResponseMap = new Map<String, Object>();
-
+    
         // Step 4: Call the method
         SObject customerRecord = InvoiceControllerHelper.getCustomerMap('Contact', customerMap, customerData, customerResponseMap);
-
+    
         // Step 5: Assert results
         System.assertNotEquals(null, customerRecord, 'Customer record should not be null');
         System.assertEquals('John', customerRecord.get('FirstName'), 'FirstName should match');
@@ -167,6 +174,7 @@ public class InvoiceController_Test {
         System.assertEquals('john.doe@example.com', customerRecord.get('Email'), 'Email should match');
         System.assertEquals('USD', customerRecord.get('CurrencyIsoCode'), 'CurrencyIsoCode should match');
     }
+
     /**
      * @description setup method to create test data 
     */

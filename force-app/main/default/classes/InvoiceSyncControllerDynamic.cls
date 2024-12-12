@@ -148,28 +148,41 @@ global without sharing class InvoiceSyncControllerDynamic {
             //To get the SObject of Type Invoice .
             if(invoiceSOBject == null){
                 if(String.isNotBlank(invoiceObjectApiName)){
-                    invoiceSOBject = Schema.getGlobalDescribe().get(invoiceObjectApiName).newSObject();
+                    //invoiceSOBject = Schema.getGlobalDescribe().get(invoiceObjectApiName).newSObject();
+                    List<Schema.DescribeSObjectResult> describeResults = Schema.describeSObjects(new String[]{invoiceObjectApiName});
+                    Schema.DescribeSObjectResult describeResult = describeResults[0]; 
+                    invoiceSObject = describeResult.getSObjectType().newSObject(); 
+
                 }
             }
 
             //To get the SObject of Type Line Item .
             if(lineItemSOBject == null){
                 if(String.isNotBlank(invoiceLineObjectApiName)){
-                    lineItemSOBject = Schema.getGlobalDescribe().get(invoiceLineObjectApiName).newSObject();
+                    //lineItemSOBject = Schema.getGlobalDescribe().get(invoiceLineObjectApiName).newSObject();
+                    List<Schema.DescribeSObjectResult> describeResultsLine = Schema.describeSObjects(new String[]{invoiceLineObjectApiName});
+                    Schema.DescribeSObjectResult describeResultLine = describeResultsLine[0]; 
+                    lineItemSOBject = describeResultLine.getSObjectType().newSObject(); 
                 }
             }
         
             //To get the SObject of Type Customer .
             if(contactSOBject == null){
                 if(String.isNotBlank(customerObjectApiName)){
-                    contactSOBject = Schema.getGlobalDescribe().get(customerObjectApiName).newSObject();
+                    //contactSOBject = Schema.getGlobalDescribe().get(customerObjectApiName).newSObject();
+                    List<Schema.DescribeSObjectResult> describeResultsCustomer = Schema.describeSObjects(new String[]{customerObjectApiName});
+                    Schema.DescribeSObjectResult describeResultCustomer = describeResultsCustomer[0]; 
+                    contactSOBject = describeResultCustomer.getSObjectType().newSObject(); 
                 }
             }
 
             //To get the SObject of Type Payment .
             if(paymentSOBject == null){
                 if(String.isNotBlank(paymentObjectApiName)){
-                    paymentSOBject = Schema.getGlobalDescribe().get(paymentObjectApiName).newSObject();
+                    //paymentSOBject = Schema.getGlobalDescribe().get(paymentObjectApiName).newSObject();
+                    List<Schema.DescribeSObjectResult> describeResultsPayment = Schema.describeSObjects(new String[]{paymentObjectApiName});
+                    Schema.DescribeSObjectResult describeResultPayment = describeResultsPayment[0]; 
+                    paymentSOBject = describeResultPayment.getSObjectType().newSObject(); 
                 }
             }
 
@@ -200,7 +213,12 @@ global without sharing class InvoiceSyncControllerDynamic {
         //to get all the Invoice Accessible fields for the running users.
         try{
             if(String.isNotBlank(invoiceObjectApiName) && mapQbSfInvFieldName.keySet().size()>0){
-                Map<String, Schema.SObjectField> invoicefieldMap = Schema.getGlobalDescribe().get(invoiceObjectApiName).getDescribe().fields.getMap();
+                //Map<String, Schema.SObjectField> invoicefieldMap = Schema.getGlobalDescribe().get(invoiceObjectApiName).getDescribe().fields.getMap();
+                List<Schema.DescribeSObjectResult> describeResults = Schema.describeSObjects(new String[]{invoiceObjectApiName});
+                Schema.DescribeSObjectResult describeResult = describeResults[0]; 
+                
+                Map<String, Schema.SObjectField> invoiceFieldMap = describeResult.fields.getMap(); 
+
                 for (String fieldName : mapQbSfInvFieldName.Values()) {
                     if (invoicefieldMap.get(fieldName).getDescribe().isAccessible()) {
                         invoiceAccessFlds.add(fieldName);
@@ -218,7 +236,12 @@ global without sharing class InvoiceSyncControllerDynamic {
 
             //to get all the Invoice Line Items Accessible fields for the running users.
             if(String.isNotBlank(invoiceLineObjectApiName) && mapQbSfLineFieldName.keySet().size()>0){
-                Map<String, Schema.SObjectField> lineItemfieldMap = Schema.getGlobalDescribe().get(invoiceLineObjectApiName).getDescribe().fields.getMap();
+                //Map<String, Schema.SObjectField> lineItemfieldMap = Schema.getGlobalDescribe().get(invoiceLineObjectApiName).getDescribe().fields.getMap();
+                List<Schema.DescribeSObjectResult> describeResults = Schema.describeSObjects(new String[]{invoiceLineObjectApiName});
+                Schema.DescribeSObjectResult describeResult = describeResults[0]; 
+                
+                Map<String, Schema.SObjectField> lineItemFieldMap = describeResult.fields.getMap();
+
                 for (String fieldName : mapQbSfLineFieldName.Values()) {
                     if (lineItemfieldMap.get(fieldName).getDescribe().isAccessible()) {
                         lineItemsAccessFlds.add(fieldName);
@@ -236,7 +259,12 @@ global without sharing class InvoiceSyncControllerDynamic {
 
             //to get all the customer Accessible fields for the running users.
             if(String.isNotBlank(customerObjectApiName) && mapQbSfCustFieldName.keySet().size()>0){
-                Map<String, Schema.SObjectField> customerfieldMap = Schema.getGlobalDescribe().get(customerObjectApiName).getDescribe().fields.getMap();
+                //Map<String, Schema.SObjectField> customerfieldMap = Schema.getGlobalDescribe().get(customerObjectApiName).getDescribe().fields.getMap();
+                List<Schema.DescribeSObjectResult> describeResults = Schema.describeSObjects(new String[]{customerObjectApiName});
+                Schema.DescribeSObjectResult describeResult = describeResults[0]; 
+                
+                Map<String, Schema.SObjectField> customerFieldMap = describeResult.fields.getMap(); 
+
                 for (String fieldName : mapQbSfCustFieldName.Values()) {
                     if (customerfieldMap.get(fieldName).getDescribe().isAccessible()) {
                         customerAccessFlds.add(fieldName);
@@ -949,13 +977,16 @@ global without sharing class InvoiceSyncControllerDynamic {
                     }
                 }
             }
-
+			List<Schema.DescribeSObjectResult> describeResults = Schema.describeSObjects(new String[]{paymentObjectApiName});
+			Schema.DescribeSObjectResult describeResult = describeResults[0]; // Access the first result
         //Doing the Dml ops on Payments if found and correctly mapped on QuickBook Setup Tab.
             if (lstinvpayment.size() > 0 && mapPayIdInvoiceIds.keySet().size() > 0 && mapPayIdSyncToken.keySet().size() > 0 && String.isNotBlank(mapQbSfPaymentFieldName.get('payExtId')) && String.isNotBlank(paymentObjectApiName)){
-                if(Schema.getGlobalDescribe().get(paymentObjectApiName).getDescribe(SObjectDescribeOptions.DEFERRED).isCreateable()
-                    || Schema.getGlobalDescribe().get(paymentObjectApiName).getDescribe(SObjectDescribeOptions.DEFERRED).isUpdateable() ){
-                    Schema.sObjectField paymentExternalId = Schema.getGlobalDescribe().get(paymentObjectApiName).getDescribe().fields.getMap().get(mapQbSfPaymentFieldName.get('payExtId'));
-
+                //if(Schema.getGlobalDescribe().get(paymentObjectApiName).getDescribe(SObjectDescribeOptions.DEFERRED).isCreateable()
+                 //   || Schema.getGlobalDescribe().get(paymentObjectApiName).getDescribe(SObjectDescribeOptions.DEFERRED).isUpdateable() ){
+                if (describeResult.isCreateable() || describeResult.isUpdateable()) {   
+                	//Schema.sObjectField paymentExternalId = Schema.getGlobalDescribe().get(paymentObjectApiName).getDescribe().fields.getMap().get(mapQbSfPaymentFieldName.get('payExtId'));
+					Map<String, Schema.SObjectField> fieldsMap = describeResult.fields.getMap();
+    				Schema.SObjectField paymentExternalId = fieldsMap.get(mapQbSfPaymentFieldName.get('payExtId'));
                     Database.UpsertResult[] payUpsertResult  = Database.upsert(lstinvpayment,paymentExternalId,true, AccessLevel.System_mode); //System_Mode : the Guest does not have access to the SF records.
                     Boolean allPaymentUpserted = false;
                     for(Database.upsertResult result : payUpsertResult){
@@ -986,12 +1017,14 @@ global without sharing class InvoiceSyncControllerDynamic {
                         }       
                     }
                 }
-                
-                if((Schema.getGlobalDescribe().get(invoiceObjectApiName).getDescribe(SObjectDescribeOptions.DEFERRED).isCreateable()
-                    || Schema.getGlobalDescribe().get(invoiceObjectApiName).getDescribe(SObjectDescribeOptions.DEFERRED).isUpdateable() )
+                List<Schema.DescribeSObjectResult> describeResultsInvoice = Schema.describeSObjects(new String[]{invoiceObjectApiName});
+				Schema.DescribeSObjectResult describeResultInvoice = describeResultsInvoice[0]; // Access the first result
+                if((describeResultInvoice.isCreateable() || describeResultInvoice.isUpdateable())
                     && lstDelQbInvoices.size() > 0){
                     if(String.isNotBlank(mapQbSfInvFieldName.get('Id')) && String.isNotBlank(invoiceObjectApiName)){
-                        Schema.sObjectField invoiceExternalId = Schema.getGlobalDescribe().get(invoiceObjectApiName).getDescribe().fields.getMap().get(mapQbSfInvFieldName.get('Id'));
+                        //Schema.sObjectField invoiceExternalId = Schema.getGlobalDescribe().get(invoiceObjectApiName).getDescribe().fields.getMap().get(mapQbSfInvFieldName.get('Id'));
+                        Map<String, Schema.SObjectField> fieldsMap = describeResult.fields.getMap();
+        				Schema.sObjectField invoiceExternalId = fieldsMap.get(mapQbSfInvFieldName.get('Id'));
                         Database.upsert(lstDelQbInvoices,invoiceExternalId,true,AccessLevel.System_mode);
                         
                     }
@@ -1167,10 +1200,13 @@ global without sharing class InvoiceSyncControllerDynamic {
                 } 
             }
             if (lstContact.size() > 0) {
-                if(Schema.getGlobalDescribe().get(customerObjectApiName).getDescribe(SObjectDescribeOptions.DEFERRED).isCreateable()
-                || Schema.getGlobalDescribe().get(customerObjectApiName).getDescribe(SObjectDescribeOptions.DEFERRED).isUpdateable() ){
+                List<Schema.DescribeSObjectResult> describeResults = Schema.describeSObjects(new String[]{customerObjectApiName});
+				Schema.DescribeSObjectResult describeResult = describeResults[0]; // Access the first result
+                if(describeResult.isCreateable() || describeResult.isUpdateable()){
                     if(String.isNotBlank(mapQbSfCustFieldName.get('Id')) &&  String.isNotBlank(customerObjectApiName)){
-                        Schema.sObjectField custExternalId = Schema.getGlobalDescribe().get(customerObjectApiName).getDescribe().fields.getMap().get(mapQbSfCustFieldName.get('Id'));
+                        //Schema.sObjectField custExternalId = Schema.getGlobalDescribe().get(customerObjectApiName).getDescribe().fields.getMap().get(mapQbSfCustFieldName.get('Id'));
+                        Map<String, Schema.SObjectField> fieldsMap = describeResult.fields.getMap();
+        				Schema.sObjectField custExternalId = fieldsMap.get(mapQbSfCustFieldName.get('Id'));
                         Database.upsert(lstContact,custExternalId,true,AccessLevel.System_mode);
                     }
                 }
@@ -1646,9 +1682,16 @@ global without sharing class InvoiceSyncControllerDynamic {
 
             //Upserting the invoices and ts line items.
             if (lstInvoice.size() > 0) {
-                if(Schema.getGlobalDescribe().get(invoiceObjectApiName).getDescribe(SObjectDescribeOptions.DEFERRED).isCreateable()
-                    || Schema.getGlobalDescribe().get(invoiceObjectApiName).getDescribe(SObjectDescribeOptions.DEFERRED).isUpdateable()){
-                        //Test : To check inaccesible Fields.
+                List<Schema.DescribeSObjectResult> describeInvoiceResults = Schema.describeSObjects(new String[]{invoiceObjectApiName});
+				List<Schema.DescribeSObjectResult> describeInvoiceLineResults = Schema.describeSObjects(new String[]{invoiceLineObjectApiName});
+                
+                Schema.DescribeSObjectResult describeInvoiceResult = describeInvoiceResults[0]; 
+				Schema.DescribeSObjectResult describeInvoiceLineResult = describeInvoiceLineResults[0]; 
+                
+                //if(Schema.getGlobalDescribe().get(invoiceObjectApiName).getDescribe(SObjectDescribeOptions.DEFERRED).isCreateable()
+                //    || Schema.getGlobalDescribe().get(invoiceObjectApiName).getDescribe(SObjectDescribeOptions.DEFERRED).isUpdateable()){
+                if (describeInvoiceResult.isCreateable() || describeInvoiceResult.isUpdateable()) {       
+                		//Test : To check inaccesible Fields.
                         // System.debug(lstInvoice[0].get(mapQbSfInvFieldName.get('Id')));
                         // System.debug(invoiceExternalId.getDescribe().getLabel());
 
@@ -1665,9 +1708,10 @@ global without sharing class InvoiceSyncControllerDynamic {
                         }
                 }
                 if (lstInvoiceLines.size() > 0) {
-                    if(Schema.getGlobalDescribe().get(invoiceLineObjectApiName).getDescribe(SObjectDescribeOptions.DEFERRED).isCreateable()
-                        || Schema.getGlobalDescribe().get(invoiceLineObjectApiName).getDescribe(SObjectDescribeOptions.DEFERRED).isUpdateable()){
-                        if(lineItemsExternalId != null && lineItemsAccessFlds.contains(mapQbSfLineFieldName.get('LineItemId'))){
+                   // if(Schema.getGlobalDescribe().get(invoiceLineObjectApiName).getDescribe(SObjectDescribeOptions.DEFERRED).isCreateable()
+                    //    || Schema.getGlobalDescribe().get(invoiceLineObjectApiName).getDescribe(SObjectDescribeOptions.DEFERRED).isUpdateable()){
+                    if (describeInvoiceLineResult.isCreateable() || describeInvoiceLineResult.isUpdateable()) {    
+                    	if(lineItemsExternalId != null && lineItemsAccessFlds.contains(mapQbSfLineFieldName.get('LineItemId'))){
                             Database.upsert(lstInvoiceLines,lineItemsExternalId,false, AccessLevel.System_mode);
                         }
                     }
@@ -2096,17 +2140,21 @@ global without sharing class InvoiceSyncControllerDynamic {
                         cmpRes.status = 'Success';
                         cmpRes.message = 'The Invoice Record Synced Successfully with Quickbooks.';
                         if(lineItemRecordsToUpdate.size()>0 && String.isNotBlank(invoiceLineObjectApiName)){
-                            
-                            if(Schema.getGlobalDescribe().get(invoiceLineObjectApiName).getDescribe(SObjectDescribeOptions.DEFERRED).isUpdateable()){
-                                update as user lineItemRecordsToUpdate;
+                            List<Schema.DescribeSObjectResult> describeInvoiceLineResults = Schema.describeSObjects(new String[]{invoiceLineObjectApiName});
+							Schema.DescribeSObjectResult describeInvoiceLineResult = describeInvoiceLineResults[0];
+                            //if(Schema.getGlobalDescribe().get(invoiceLineObjectApiName).getDescribe(SObjectDescribeOptions.DEFERRED).isUpdateable()){
+                            if (describeInvoiceLineResult.isUpdateable()) {  
+                            	update as user lineItemRecordsToUpdate;
                             }
                         } 
                         List<SObject> qbInvList = new List<SObject>();
                         qbInvList.add(qbInv);
                         if(String.isNotBlank(invoiceObjectApiName)){
-                            
-                            if(Schema.getGlobalDescribe().get(invoiceObjectApiName).getDescribe(SObjectDescribeOptions.DEFERRED).isUpdateable()){
-                                update as user qbInv;
+                            List<Schema.DescribeSObjectResult> describeInvoiceResults = Schema.describeSObjects(new String[]{invoiceObjectApiName});
+							Schema.DescribeSObjectResult describeInvoiceResult = describeInvoiceResults[0]; 
+                            //if(Schema.getGlobalDescribe().get(invoiceObjectApiName).getDescribe(SObjectDescribeOptions.DEFERRED).isUpdateable()){
+                            if (describeInvoiceResult.isUpdateable()) {
+                            	update as user qbInv;
                             }
                             
                         }

@@ -1,5 +1,5 @@
 @isTest
-public class CalloutLogDeleteBatchJobscheduled_Test {
+public with sharing class CalloutLogDeleteBatchJobscheduled_Test {
 	@isTest
     static void testExecuteMethod(){
         

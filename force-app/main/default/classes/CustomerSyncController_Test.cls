@@ -1,5 +1,5 @@
 @isTest
-public class CustomerSyncController_Test {
+public with sharing class CustomerSyncController_Test {
 	@testSetup
     static void setupData() {
         createQuickbookInfo();

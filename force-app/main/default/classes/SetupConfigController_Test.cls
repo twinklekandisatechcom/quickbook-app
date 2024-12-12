@@ -1,5 +1,5 @@
 @isTest
-public class SetupConfigController_Test {
+public with sharing class SetupConfigController_Test {
 	
     /**
      * @description createData

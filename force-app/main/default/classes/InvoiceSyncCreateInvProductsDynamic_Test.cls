@@ -1,7 +1,12 @@
 @isTest
-public class InvoiceSyncCreateInvProductsDynamic_Test {
-	@TestSetup
-    public static void createData(){
+public with sharing class InvoiceSyncCreateInvProductsDynamic_Test {
+
+    /**
+     * @description This method creates mock data for testing purposes.
+     *              It sets up a QuickBook Info record with mock values.
+     *              This record is used in test scenarios for validation.
+     */
+	@TestSetup public static void createData(){
         KTQB__QB_Setting__c qs = new KTQB__QB_Setting__c();
         qs.KTQB__QB_version__c = 64;
         upsert qs;
@@ -421,7 +426,7 @@ public class InvoiceSyncCreateInvProductsDynamic_Test {
         List<KTQB__QB_Invoice__c> invoiceList = [SELECT Id, KTQB__Contact__c FROM KTQB__QB_Invoice__c];
         List<KTQB__QB_Invoice_Line_Item__c> lineitemtList = [SELECT Id, KTQB__Line_Item_Name__c, KTQB__Line_Item_Id__c FROM KTQB__QB_Invoice_Line_Item__c LIMIT 1];
         KTQB__InvoiceConfigurationOptions__c invoiceConfigCs = KTQB__InvoiceConfigurationOptions__c.getOrgDefaults();
-        KTQB__Invoice_Object_Field_Mapping__c invObjFldMapping = KTQB__Invoice_Object_Field_Mapping__c.getInstance();
+        // KTQB__Invoice_Object_Field_Mapping__c invObjFldMapping = KTQB__Invoice_Object_Field_Mapping__c.getInstance();
         Map<String, String> mapQbSfInvFieldName = new Map<String, String>();
         List<String> invoiceListId = new List<String>();
         List<String> lineitemtListId = new List<String>();
@@ -451,15 +456,30 @@ public class InvoiceSyncCreateInvProductsDynamic_Test {
             }
         }
         String payQuery = 'SELECT id FROM KTQB__Qb_Invoice_Payment__c WHERE '+whereclause+' IN: lstInvoiceCustChanged WITH USER_MODE ';
-        //InvoiceSyncCreateInvProductsDynamic(String query,List<String> lstInvoiceCustChanged)
+        // InvoiceSyncCreateInvProductsDynamic(String query,List<String> lstInvoiceCustChanged)
         InvoiceSyncCreateInvProductsDynamic iscipd1 = new InvoiceSyncCreateInvProductsDynamic(payQuery, lstInvoiceCustChanged);
         InvoiceSyncCreateInvProductsDynamic iscipd2 = new InvoiceSyncCreateInvProductsDynamic(payQuery, invoiceListId, lineitemtListId);
        
         // Execute the Queueable
         Test.startTest();
         	Database.executeBatch(iscipd1,1);
+        	Database.executeBatch(iscipd2,1);
         	//System.enqueueJob(iscipd);
         Test.stopTest();
+
+		// Assertions
+        // Assert List Populations
+        System.assert(!invoiceListId.isEmpty(), 'Invoice List ID should not be empty.');
+        System.assert(!lineitemtListId.isEmpty(), 'Line Item List ID should not be empty.');
+        System.assertEquals(invoiceList[0].Id, invoiceListId[0], 'Invoice ID should match the first entry in the query results.');
+
+        // Assert Map Content
+        System.assert(mapQbSfInvFieldName.containsKey(lineitemtList[0].KTQB__Line_Item_Id__c), 'Map should contain the Line Item ID as key.');
+        System.assertEquals(lineitemtList[0].KTQB__Line_Item_Name__c, mapQbSfInvFieldName.get(lineitemtList[0].KTQB__Line_Item_Id__c), 'Map value should match Line Item Name.');
+
+        // Assert Query Construction
+        System.assertNotEquals('', whereclause, 'Where clause should be constructed.');
+        System.assert(payQuery.contains('KTQB__Qb_Invoice_Payment__c'), 'Query should reference correct object.');
 
     }
 }

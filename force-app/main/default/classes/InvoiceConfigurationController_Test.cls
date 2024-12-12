@@ -6,7 +6,7 @@
  * @last modified by  : Piyush V Ganorkar
  */ 
 @isTest
-public class InvoiceConfigurationController_Test {
+public with sharing class InvoiceConfigurationController_Test {
 	/**
      * @description Test data setup
     */

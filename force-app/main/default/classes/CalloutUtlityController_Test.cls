@@ -1,5 +1,5 @@
 @isTest
-public class CalloutUtlityController_Test {
+public with sharing class CalloutUtlityController_Test {
     
     @testSetup
     static void setupData() {

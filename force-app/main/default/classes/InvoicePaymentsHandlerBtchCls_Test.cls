@@ -1,8 +1,12 @@
 @isTest
-public class InvoicePaymentsHandlerBtchCls_Test {
+public with sharing class InvoicePaymentsHandlerBtchCls_Test {
     
-    @TestSetup
-    public static void createData(){
+    /**
+     * @description This method creates mock data for testing purposes.
+     *              It sets up a QuickBook Info record with mock values.
+     *              This record is used in test scenarios for validation.
+     */
+    @TestSetup public static void createData(){
         /*InvoiceSyncControllerDynamic.paymentObjectApiName = 'KTQB__Qb_Invoice_Payment__c';
         InvoiceSyncControllerDynamic.invoiceFieldApiNameOnLine = 'KTQB__QB_Invoice__c';*/
         
@@ -711,6 +715,9 @@ public class InvoicePaymentsHandlerBtchCls_Test {
         Test.startTest();
         	Database.executeBatch(iphbc,1);
         Test.stopTest();
+
+        System.assertEquals(2, mapPayIdInvoiceIds.size(), 'Map of Payment IDs to Invoice IDs should contain 2 entries.');
+        System.assertEquals(2, mapPayIdSyncToken.size(), 'Map of Payment IDs to Sync Tokens should contain 2 entries.');
     }
     
 }

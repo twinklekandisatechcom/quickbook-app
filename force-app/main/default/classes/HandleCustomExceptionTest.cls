@@ -1,5 +1,5 @@
 @isTest
-public class HandleCustomExceptionTest {
+public with sharing class HandleCustomExceptionTest {
 	@isTest
     static void testLogException(){
         CalloutException e = new CalloutException();

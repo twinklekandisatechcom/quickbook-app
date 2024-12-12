@@ -9,7 +9,7 @@
  */ 
 
 @isTest
-public class QuickBooksIntegerationController_Test {
+public with sharing class QuickBooksIntegerationController_Test {
     /**
      * @description : testData
      */

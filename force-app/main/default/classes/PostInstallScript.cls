@@ -127,15 +127,18 @@ public with sharing class PostInstallScript implements InstallHandler {
         List<Object> fieldMappings = (List<Object>) JSON.deserializeUntyped(jsonInput);
         
         // Get the SObject type dynamically using the provided object name
-        Schema.SObjectType sObjectType = Schema.getGlobalDescribe().get(objectApiName);
-        
+        //Schema.SObjectType sObjectType = Schema.getGlobalDescribe().get(objectApiName);
+        Schema.DescribeSObjectResult describeResult = Schema.describeSObjects(new String[]{objectApiName})[0];
+		Schema.SObjectType sObjectType = describeResult.getSObjectType();
+
+       
         // Check if the object exists
         if (sObjectType == null) {
             return;
         }
 
         // Get the SObject describe result for field mappings
-        Map<String, Schema.SObjectField> fieldMap = sObjectType.getDescribe().fields.getMap();
+        Map<String, Schema.SObjectField> fieldMap = sObjectType.getDescribe(SObjectDescribeOptions.DEFERRED).fields.getMap();
 
         // Prepare a list to hold the dynamic SObject records
         List<SObject> sObjectRecords = new List<SObject>();
@@ -162,7 +165,7 @@ public with sharing class PostInstallScript implements InstallHandler {
         try {
             insert sObjectRecords;
         } catch (DmlException e) {
-            System.debug('Error inserting records: ' + e.getMessage());
+            HandleCustomException.logException(e);
         }
     }
     
